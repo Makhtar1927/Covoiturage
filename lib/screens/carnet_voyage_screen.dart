@@ -15,6 +15,13 @@ class CarnetVoyageScreen extends ConsumerWidget {
     final bookings = ref.watch(bookingProvider);
     final syncQueue = ref.watch(syncQueueProvider);
 
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textColor = cs.onSurface;
+    final subtitleColor = cs.onSurface.withValues(alpha: 0.6);
+    final dividerColor = cs.onSurface.withValues(alpha: 0.12);
 
     // List bookings that have status 'accepted' where this user is passenger or driver
     final activeBookings = bookings.where((b) {
@@ -24,10 +31,11 @@ class CarnetVoyageScreen extends ConsumerWidget {
     }).toList();
 
     return Scaffold(
+      backgroundColor: cs.surface,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Carnet de Voyage",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
         ),
       ),
       body: Column(
@@ -38,7 +46,7 @@ class CarnetVoyageScreen extends ConsumerWidget {
           ),
           Expanded(
             child: activeBookings.isEmpty
-                ? _buildEmptyState()
+                ? _buildEmptyState(textColor, subtitleColor)
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: activeBookings.length,
@@ -51,7 +59,8 @@ class CarnetVoyageScreen extends ConsumerWidget {
                         margin: const EdgeInsets.only(bottom: 16),
                         child: GlassContainer(
                           opacity: 0.08,
-                          borderColor: Colors.tealAccent.withOpacity(0.3),
+                          borderColor: isDriver ? cs.primary : Colors.teal,
+                          useWhiteBlend: !isDark,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -63,19 +72,19 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: isDriver 
-                                          ? Colors.cyan.shade900.withOpacity(0.4) 
-                                          : Colors.teal.shade900.withOpacity(0.4),
+                                          ? cs.primary.withValues(alpha: 0.12) 
+                                          : Colors.teal.withValues(alpha: 0.12),
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
                                         color: isDriver 
-                                            ? Colors.cyanAccent.withOpacity(0.3) 
-                                            : Colors.tealAccent.withOpacity(0.3)
+                                            ? cs.primary.withValues(alpha: 0.3) 
+                                            : Colors.teal.withValues(alpha: 0.3)
                                       ),
                                     ),
                                     child: Text(
                                       isDriver ? "Conducteur" : "Passager",
                                       style: TextStyle(
-                                        color: isDriver ? Colors.cyanAccent : Colors.tealAccent,
+                                        color: isDriver ? cs.primary : Colors.teal,
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -83,27 +92,27 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                   ),
                                   Row(
                                     children: [
-                                      const Icon(Icons.download_done_rounded, color: Colors.greenAccent, size: 16),
+                                      const Icon(Icons.download_done_rounded, color: Colors.green, size: 16),
                                       const SizedBox(width: 4),
                                       Text(
                                         "Sauvegardé hors-ligne",
-                                        style: TextStyle(color: Colors.greenAccent.shade100, fontSize: 10, fontWeight: FontWeight.bold),
+                                        style: TextStyle(color: Colors.green.shade700, fontSize: 10, fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
-                              const Divider(color: Colors.white24, height: 20),
+                              Divider(color: dividerColor, height: 20),
                               
                               // Route
                               Text(
                                 "${ride.startPoint} ➔ ${ride.endPoint}",
-                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 14),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 "Date : ${DateFormat('dd MMMM yyyy à HH:mm', 'fr_FR').format(ride.dateTime)}",
-                                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 11),
+                                style: TextStyle(color: subtitleColor, fontSize: 11),
                               ),
                               const SizedBox(height: 10),
                               
@@ -117,22 +126,24 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                     radius: 14,
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    isDriver 
-                                        ? "Passager : ${booking.passenger.name} (${booking.passenger.circle})" 
-                                        : "Conducteur : ${ride.driver.name} (${ride.driver.circle})",
-                                    style: const TextStyle(color: Colors.white70, fontSize: 12),
-
+                                  Expanded(
+                                    child: Text(
+                                      isDriver 
+                                          ? "Passager : ${booking.passenger.name} (${booking.passenger.circle})" 
+                                          : "Conducteur : ${ride.driver.name} (${ride.driver.circle})",
+                                      style: TextStyle(color: subtitleColor, fontSize: 12),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
                               
-                              const Divider(color: Colors.white12, height: 24),
+                              Divider(color: dividerColor, height: 24),
                               
                               // Checkpoint validators (Départ / Arrivée)
-                              const Text(
+                              Text(
                                 "Validation de la course :",
-                                style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: subtitleColor, fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 12),
                               
@@ -144,6 +155,11 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                 isValidated: booking.departureValidated,
                                 isPending: _isActionPending(syncQueue, booking.id, 'VALIDATE_DEPARTURE'),
                                 onValidate: () => ref.read(bookingProvider.notifier).validateDeparture(booking.id),
+                                cs: cs,
+                                textColor: textColor,
+                                subtitleColor: subtitleColor,
+                                dividerColor: dividerColor,
+                                isDark: isDark,
                               ),
                               const SizedBox(height: 12),
                               
@@ -156,6 +172,11 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                 isPending: _isActionPending(syncQueue, booking.id, 'VALIDATE_ARRIVAL'),
                                 isEnabled: booking.departureValidated, // only enable after departure is validated
                                 onValidate: () => ref.read(bookingProvider.notifier).validateArrival(booking.id),
+                                cs: cs,
+                                textColor: textColor,
+                                subtitleColor: subtitleColor,
+                                dividerColor: dividerColor,
+                                isDark: isDark,
                               ),
 
                               // Offline Warning text if validated offline
@@ -164,18 +185,18 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Colors.orange.shade900.withOpacity(0.2),
+                                    color: Colors.orange.withValues(alpha: 0.08),
                                     borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.orangeAccent.withOpacity(0.3)),
+                                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.hourglass_empty_rounded, color: Colors.orangeAccent, size: 14),
+                                      const Icon(Icons.hourglass_empty_rounded, color: Colors.orange, size: 14),
                                       const SizedBox(width: 8),
                                       const Expanded(
                                         child: Text(
                                           "Mémorisé localement. La validation sera synchronisée dès qu'une connexion sera disponible.",
-                                          style: TextStyle(color: Colors.orangeAccent, fontSize: 10),
+                                          style: TextStyle(color: Colors.orange, fontSize: 10),
                                         ),
                                       ),
                                     ],
@@ -206,43 +227,48 @@ class CarnetVoyageScreen extends ConsumerWidget {
     required bool isPending,
     bool isEnabled = true,
     required VoidCallback onValidate,
+    required ColorScheme cs,
+    required Color textColor,
+    required Color subtitleColor,
+    required Color dividerColor,
+    required bool isDark,
   }) {
-    Color color = Colors.white30;
+    Color color = isDark ? Colors.white38 : Colors.black38;
     Widget trailing = const SizedBox();
 
     if (isValidated) {
       if (isPending) {
-        color = Colors.orangeAccent;
+        color = Colors.orange;
         trailing = Row(
           children: [
             const Text(
               "En attente de sync. ⏳",
-              style: TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.orange, fontSize: 11, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 6),
-            Icon(Icons.hourglass_top_rounded, color: Colors.orangeAccent.withOpacity(0.8), size: 18),
+            Icon(Icons.hourglass_top_rounded, color: Colors.orange.withValues(alpha: 0.8), size: 18),
           ],
         );
       } else {
-        color = Colors.tealAccent;
+        color = Colors.teal;
         trailing = Row(
           children: [
             Text(
               "Validé ✓",
-              style: TextStyle(color: Colors.tealAccent.shade100, fontSize: 11, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.teal.shade800, fontSize: 11, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 6),
-            const Icon(Icons.check_circle_rounded, color: Colors.tealAccent, size: 18),
+            const Icon(Icons.check_circle_rounded, color: Colors.teal, size: 18),
           ],
         );
       }
     } else {
       if (isEnabled) {
-        color = Colors.cyanAccent;
+        color = cs.primary;
         trailing = ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.cyanAccent,
-            foregroundColor: Colors.black87,
+            backgroundColor: cs.primary,
+            foregroundColor: cs.onPrimary,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -252,17 +278,17 @@ class CarnetVoyageScreen extends ConsumerWidget {
           child: const Text("Valider", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
         );
       } else {
-        color = Colors.white24;
+        color = isDark ? Colors.white24 : Colors.black26;
         trailing = ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white10,
+            backgroundColor: cs.onSurface.withValues(alpha: 0.1),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           onPressed: null,
-          child: const Text("Verrouillé", style: TextStyle(color: Colors.white30, fontSize: 11)),
+          child: Text("Verrouillé", style: TextStyle(color: subtitleColor.withValues(alpha: 0.5), fontSize: 11)),
         );
       }
     }
@@ -271,13 +297,13 @@ class CarnetVoyageScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: isValidated 
-            ? (isPending ? Colors.orange.withOpacity(0.05) : Colors.tealAccent.withOpacity(0.05))
-            : Colors.white.withOpacity(0.02),
+            ? (isPending ? Colors.orange.withValues(alpha: 0.05) : Colors.teal.withValues(alpha: 0.05))
+            : cs.onSurface.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isValidated 
-              ? (isPending ? Colors.orangeAccent.withOpacity(0.2) : Colors.tealAccent.withOpacity(0.2))
-              : Colors.white.withOpacity(0.05),
+              ? (isPending ? Colors.orange.withValues(alpha: 0.2) : Colors.teal.withValues(alpha: 0.2))
+              : dividerColor,
         ),
       ),
       child: Row(
@@ -299,24 +325,24 @@ class CarnetVoyageScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Center(
+  Widget _buildEmptyState(Color textColor, Color subtitleColor) {
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.assignment_turned_in_outlined, size: 72, color: Colors.white30),
+            Icon(Icons.assignment_turned_in_outlined, size: 72, color: subtitleColor.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               "Aucun trajet actif",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "Dès qu'une réservation est validée, la feuille de route s'affiche ici pour vos validations Départ & Arrivée, y compris hors-ligne.",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white60, fontSize: 13),
+              style: TextStyle(color: subtitleColor, fontSize: 13),
             ),
           ],
         ),

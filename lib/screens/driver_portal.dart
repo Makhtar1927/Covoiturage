@@ -29,7 +29,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
   final _startController = TextEditingController();
   final _endController = TextEditingController();
   final List<TextEditingController> _stopControllers = [];
-  final _priceController = TextEditingController(text: '3.00');
+  final _priceController = TextEditingController(text: '500');
   
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   TimeOfDay _selectedTime = const TimeOfDay(hour: 8, minute: 30);
@@ -139,7 +139,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
       final startPoint = _startController.text.trim();
       final endPoint = _endController.text.trim();
       final intermediateStops = _stopControllers.map((c) => c.text.trim()).where((s) => s.isNotEmpty).toList();
-      final price = double.tryParse(_priceController.text) ?? 2.0;
+      final price = double.tryParse(_priceController.text) ?? 500.0;
 
       final fullDateTime = DateTime(
         _selectedDate.year,
@@ -173,7 +173,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
         _stopControllers.clear();
       });
       
-      // Redirect to list or view requests
+      // Redirect to requests tab
       _tabController.animateTo(2);
     }
   }
@@ -239,17 +239,26 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
     // Filter bookings where this user is the driver of the ride
     final driverBookings = bookings.where((b) => b.ride.driver.id == user?.id).toList();
 
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textColor = cs.onSurface;
+    final subtitleColor = cs.onSurface.withValues(alpha: 0.6);
+    final dividerColor = cs.onSurface.withValues(alpha: 0.12);
+
     return Scaffold(
+      backgroundColor: cs.surface,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Espace Conducteur",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.cyanAccent,
-          labelColor: Colors.cyanAccent,
-          unselectedLabelColor: Colors.white70,
+          indicatorColor: cs.primary,
+          labelColor: cs.primary,
+          unselectedLabelColor: subtitleColor,
           tabs: const [
             Tab(icon: Icon(Icons.directions_car_rounded), text: "Véhicule"),
             Tab(icon: Icon(Icons.add_location_alt_rounded), text: "Publier"),
@@ -268,13 +277,13 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
               controller: _tabController,
               children: [
                 // TAB 1: VEHICLE MANAGEMENT
-                _buildVehicleTab(),
+                _buildVehicleTab(cs, textColor, subtitleColor, dividerColor, isDark),
                 
                 // TAB 2: PUBLISH RIDE
-                _buildPublishTab(user),
+                _buildPublishTab(user, cs, textColor, subtitleColor, dividerColor, isDark),
                 
                 // TAB 3: BOOKING REQUESTS
-                _buildRequestsTab(driverBookings, isOnline),
+                _buildRequestsTab(driverBookings, isOnline, cs, textColor, subtitleColor, dividerColor, isDark),
               ],
             ),
           ),
@@ -283,7 +292,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
     );
   }
 
-  Widget _buildVehicleTab() {
+  Widget _buildVehicleTab(ColorScheme cs, Color textColor, Color subtitleColor, Color dividerColor, bool isDark) {
     final vehicleSaved = ref.watch(currentUserProvider.notifier).getVehicle() != null;
 
     return SingleChildScrollView(
@@ -294,32 +303,33 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
           if (vehicleSaved) ...[
             GlassContainer(
               opacity: 0.1,
-              borderColor: Colors.cyanAccent,
+              borderColor: cs.primary,
+              useWhiteBlend: !isDark,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         "Véhicule Enregistré",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.cyanAccent,
+                          color: cs.primary,
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.cyan.shade900.withOpacity(0.4),
+                          color: cs.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
+                          border: Border.all(color: cs.primary.withValues(alpha: 0.3)),
                         ),
                         child: Text(
                           _selectedCategory,
-                          style: const TextStyle(
-                            color: Colors.cyanAccent,
+                          style: TextStyle(
+                            color: cs.primary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -327,38 +337,38 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                       ),
                     ],
                   ),
-                  const Divider(color: Colors.white24, height: 20),
+                  Divider(color: dividerColor, height: 20),
                   Text(
                     _modelController.text,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.color_lens_rounded, size: 16, color: Colors.white.withOpacity(0.6)),
+                      Icon(Icons.color_lens_rounded, size: 16, color: subtitleColor),
                       const SizedBox(width: 6),
-                      Text("Couleur : ${_colorController.text}", style: TextStyle(color: Colors.white.withOpacity(0.7))),
+                      Text("Couleur : ${_colorController.text}", style: TextStyle(color: subtitleColor)),
                       const SizedBox(width: 20),
-                      Icon(Icons.airline_seat_recline_normal_rounded, size: 16, color: Colors.white.withOpacity(0.6)),
+                      Icon(Icons.airline_seat_recline_normal_rounded, size: 16, color: subtitleColor),
                       const SizedBox(width: 6),
-                      Text("Places : $_vehicleSeats", style: TextStyle(color: Colors.white.withOpacity(0.7))),
+                      Text("Places : $_vehicleSeats", style: TextStyle(color: subtitleColor)),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.black26,
+                      color: cs.onSurface.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white10),
+                      border: Border.all(color: dividerColor),
                     ),
                     child: Text(
                       _plateController.text,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Courier',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: textColor,
                         letterSpacing: 2,
                       ),
                     ),
@@ -373,23 +383,24 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   "Configurer votre véhicule",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
-                  dropdownColor: Colors.deepPurple.shade900,
-                  style: const TextStyle(color: Colors.white),
+                  dropdownColor: cs.surface,
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: "Catégorie de véhicule",
+                    labelStyle: TextStyle(color: subtitleColor),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                   ),
                   items: ['Particulier', 'Mini-bus', 'Bus'].map((cat) {
                     return DropdownMenuItem<String>(
                       value: cat,
-                      child: Text(cat),
+                      child: Text(cat, style: TextStyle(color: textColor)),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -409,9 +420,10 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _modelController,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: "Marque & Modèle",
+                    labelStyle: TextStyle(color: subtitleColor),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                   ),
                   validator: (value) => value == null || value.trim().isEmpty ? "Champs obligatoire" : null,
@@ -419,9 +431,10 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _colorController,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: "Couleur",
+                    labelStyle: TextStyle(color: subtitleColor),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                   ),
                   validator: (value) => value == null || value.trim().isEmpty ? "Champs obligatoire" : null,
@@ -429,9 +442,10 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _plateController,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: "Plaque d'immatriculation",
+                    labelStyle: TextStyle(color: subtitleColor),
                     hintText: "AA-123-BB",
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                   ),
@@ -440,15 +454,15 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                 const SizedBox(height: 20),
                 Text(
                   "Capacité du véhicule : $_vehicleSeats places",
-                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: subtitleColor, fontWeight: FontWeight.w600),
                 ),
                 Slider(
                   value: _vehicleSeats.toDouble(),
                   min: _getMinSeatsForCategory(_selectedCategory).toDouble(),
                   max: _getMaxSeatsForCategory(_selectedCategory).toDouble(),
                   divisions: _getMaxSeatsForCategory(_selectedCategory) - _getMinSeatsForCategory(_selectedCategory),
-                  activeColor: Colors.cyanAccent,
-                  inactiveColor: Colors.white24,
+                  activeColor: cs.primary,
+                  inactiveColor: cs.onSurface.withValues(alpha: 0.15),
                   onChanged: (val) {
                     setState(() {
                       _vehicleSeats = val.round();
@@ -460,8 +474,8 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.cyanAccent,
-                    foregroundColor: Colors.black87,
+                    backgroundColor: cs.primary,
+                    foregroundColor: cs.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
@@ -476,7 +490,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
     );
   }
 
-  Widget _buildPublishTab(User? user) {
+  Widget _buildPublishTab(User? user, ColorScheme cs, Color textColor, Color subtitleColor, Color dividerColor, bool isDark) {
     final vehicle = ref.watch(currentUserProvider.notifier).getVehicle();
     if (vehicle == null) {
       return Center(
@@ -485,23 +499,23 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.directions_car_rounded, size: 72, color: Colors.white30),
+              Icon(Icons.directions_car_rounded, size: 72, color: subtitleColor.withValues(alpha: 0.4)),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 "Aucun véhicule configuré",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 "Vous devez d'abord ajouter votre véhicule pour pouvoir publier des trajets.",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white60),
+                style: TextStyle(color: subtitleColor),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyanAccent,
-                  foregroundColor: Colors.black87,
+                  backgroundColor: cs.primary,
+                  foregroundColor: cs.onPrimary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () => _tabController.animateTo(0),
@@ -520,17 +534,18 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               "Détails du trajet",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _startController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: textColor),
               decoration: InputDecoration(
                 labelText: "Point de départ (Adresse exacte)",
-                prefixIcon: const Icon(Icons.circle_outlined, color: Colors.cyanAccent, size: 18),
+                labelStyle: TextStyle(color: subtitleColor),
+                prefixIcon: Icon(Icons.circle_outlined, color: cs.primary, size: 18),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
               ),
               validator: (value) => value == null || value.trim().isEmpty ? "Indiquez le départ" : null,
@@ -547,9 +562,10 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                     Expanded(
                       child: TextFormField(
                         controller: controller,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: textColor),
                         decoration: InputDecoration(
                           labelText: "Étape intermédiaire ${index + 1}",
+                          labelStyle: TextStyle(color: subtitleColor),
                           prefixIcon: const Icon(Icons.location_on_outlined, color: Colors.grey, size: 18),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                         ),
@@ -575,15 +591,16 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                   _stopControllers.add(TextEditingController());
                 });
               },
-              icon: const Icon(Icons.add_circle_outline_rounded, color: Colors.cyanAccent),
-              label: const Text("Ajouter une étape intermédiaire", style: TextStyle(color: Colors.cyanAccent)),
+              icon: Icon(Icons.add_circle_outline_rounded, color: cs.primary),
+              label: Text("Ajouter une étape intermédiaire", style: TextStyle(color: cs.primary)),
             ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _endController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: textColor),
               decoration: InputDecoration(
                 labelText: "Point d'arrivée (Destination)",
+                labelStyle: TextStyle(color: subtitleColor),
                 prefixIcon: const Icon(Icons.location_on_rounded, color: Colors.redAccent, size: 18),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
               ),
@@ -599,6 +616,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                     child: InputDecorator(
                       decoration: InputDecoration(
                         labelText: "Date",
+                        labelStyle: TextStyle(color: subtitleColor),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                       ),
                       child: Row(
@@ -606,9 +624,9 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                         children: [
                           Text(
                             DateFormat('dd/MM/yyyy').format(_selectedDate),
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(color: textColor),
                           ),
-                          const Icon(Icons.calendar_month_rounded, color: Colors.white60),
+                          Icon(Icons.calendar_month_rounded, color: subtitleColor),
                         ],
                       ),
                     ),
@@ -621,6 +639,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                     child: InputDecorator(
                       decoration: InputDecoration(
                         labelText: "Heure",
+                        labelStyle: TextStyle(color: subtitleColor),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                       ),
                       child: Row(
@@ -628,9 +647,9 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                         children: [
                           Text(
                             _selectedTime.format(context),
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(color: textColor),
                           ),
-                          const Icon(Icons.access_time_rounded, color: Colors.white60),
+                          Icon(Icons.access_time_rounded, color: subtitleColor),
                         ],
                       ),
                     ),
@@ -645,10 +664,11 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                   child: TextFormField(
                     controller: _priceController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: textColor),
                     decoration: InputDecoration(
-                      labelText: "Prix par place (€)",
-                      suffixText: "EUR",
+                      labelText: "Prix par place (FCFA)",
+                      labelStyle: TextStyle(color: subtitleColor),
+                      suffixText: "CFA",
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                     ),
                     validator: (value) {
@@ -665,19 +685,19 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                     children: [
                       Text(
                         "Places proposées : $_rideSeats",
-                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                        style: TextStyle(color: subtitleColor, fontSize: 13),
                       ),
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, color: Colors.white60),
+                            icon: Icon(Icons.remove_circle_outline, color: subtitleColor),
                             onPressed: _rideSeats > 1
                                 ? () => setState(() => _rideSeats--)
                                 : null,
                           ),
-                          Text("$_rideSeats", style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text("$_rideSeats", style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold)),
                           IconButton(
-                            icon: const Icon(Icons.add_circle_outline, color: Colors.white60),
+                            icon: Icon(Icons.add_circle_outline, color: subtitleColor),
                             onPressed: _rideSeats < (vehicle.availableSeats - 1)
                                 ? () => setState(() => _rideSeats++)
                                 : null,
@@ -691,18 +711,18 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
             ),
             const SizedBox(height: 24),
             // Circle checklist
-            const Text(
+            Text(
               "Cercles communautaires autorisés",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70),
+              style: TextStyle(fontWeight: FontWeight.bold, color: subtitleColor),
             ),
             const SizedBox(height: 8),
             ..._availableCircles.map((circle) {
               final isAllowed = _selectedCircles.contains(circle);
               return CheckboxListTile(
                 value: isAllowed,
-                title: Text(circle, style: const TextStyle(color: Colors.white, fontSize: 14)),
-                activeColor: Colors.cyanAccent,
-                checkColor: Colors.black,
+                title: Text(circle, style: TextStyle(color: textColor, fontSize: 14)),
+                activeColor: cs.primary,
+                checkColor: cs.onPrimary,
                 dense: true,
                 onChanged: (bool? val) {
                   setState(() {
@@ -718,8 +738,8 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.cyanAccent,
-                foregroundColor: Colors.black87,
+                backgroundColor: cs.primary,
+                foregroundColor: cs.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
@@ -732,24 +752,24 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
     );
   }
 
-  Widget _buildRequestsTab(List<Booking> driverBookings, bool isOnline) {
+  Widget _buildRequestsTab(List<Booking> driverBookings, bool isOnline, ColorScheme cs, Color textColor, Color subtitleColor, Color dividerColor, bool isDark) {
     if (driverBookings.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.people_outline_rounded, size: 72, color: Colors.white30),
+              Icon(Icons.people_outline_rounded, size: 72, color: subtitleColor.withValues(alpha: 0.4)),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 "Aucune demande de réservation",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 "Les demandes des passagers s'afficheront ici.",
-                style: TextStyle(color: Colors.white60),
+                style: TextStyle(color: subtitleColor),
               ),
             ],
           ),
@@ -767,10 +787,10 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
         
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
-          color: Colors.white.withOpacity(0.05),
+          color: cs.onSurface.withValues(alpha: 0.05),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.white.withOpacity(0.1)),
+            side: BorderSide(color: dividerColor),
           ),
 
           child: Padding(
@@ -791,14 +811,14 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                         children: [
                           Row(
                             children: [
-                              Text(passenger.name, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                              Text(passenger.name, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
                               const SizedBox(width: 4),
-                              const Icon(Icons.verified_rounded, color: Colors.cyanAccent, size: 16),
+                              Icon(Icons.verified_rounded, color: cs.primary, size: 16),
                             ],
                           ),
                           Text(
                             "${passenger.circle} • ★ ${passenger.rating}",
-                            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12),
+                            style: TextStyle(color: subtitleColor, fontSize: 12),
                           ),
                         ],
                       ),
@@ -806,30 +826,30 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                     _buildStatusBadge(booking.status),
                   ],
                 ),
-                const Divider(color: Colors.white12, height: 24),
+                Divider(color: dividerColor, height: 24),
                 // Ride points
                 Row(
                   children: [
-                    const Icon(Icons.circle, size: 10, color: Colors.cyanAccent),
+                    Icon(Icons.circle, size: 10, color: cs.primary),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(ride.startPoint, style: const TextStyle(color: Colors.white, fontSize: 13))),
+                    Expanded(child: Text(ride.startPoint, style: TextStyle(color: textColor, fontSize: 13))),
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.0),
-                  child: SizedBox(height: 6, child: VerticalDivider(color: Colors.white24, width: 2)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: SizedBox(height: 6, child: VerticalDivider(color: dividerColor, width: 2)),
                 ),
                 Row(
                   children: [
                     const Icon(Icons.location_on, size: 12, color: Colors.redAccent),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(ride.endPoint, style: const TextStyle(color: Colors.white, fontSize: 13))),
+                    Expanded(child: Text(ride.endPoint, style: TextStyle(color: textColor, fontSize: 13))),
                   ],
                 ),
                 const SizedBox(height: 10),
                 Text(
                   "Date : ${DateFormat('dd MMMM yyyy à HH:mm', 'fr_FR').format(ride.dateTime)}",
-                  style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12),
+                  style: TextStyle(color: subtitleColor.withValues(alpha: 0.9), fontSize: 12),
                 ),
                 if (booking.status == 'pending') ...[
                   const SizedBox(height: 16),
@@ -837,7 +857,9 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+                        style: TextButton.styleFrom(
+                          foregroundColor: isDark ? Colors.redAccent : Colors.red.shade700,
+                        ),
                         onPressed: () {
                           ref.read(bookingProvider.notifier).updateBookingStatus(booking.id, 'rejected');
                         },
@@ -846,8 +868,8 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                       const SizedBox(width: 8),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.cyanAccent,
-                          foregroundColor: Colors.black87,
+                          backgroundColor: cs.primary,
+                          foregroundColor: cs.onPrimary,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         onPressed: () {
@@ -867,21 +889,21 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
   }
 
   Widget _buildStatusBadge(String status) {
-    Color bg = Colors.white10;
-    Color fg = Colors.white;
+    Color bg = Colors.transparent;
+    Color fg = Colors.grey;
     String text = status;
 
     if (status == 'pending') {
-      bg = Colors.amber.shade900.withOpacity(0.3);
-      fg = Colors.amberAccent;
+      bg = Colors.amber.withValues(alpha: 0.08);
+      fg = Colors.amber.shade700;
       text = "En attente";
     } else if (status == 'accepted') {
-      bg = Colors.green.shade900.withOpacity(0.3);
-      fg = Colors.greenAccent;
+      bg = Colors.green.withValues(alpha: 0.08);
+      fg = Colors.green.shade700;
       text = "Validé";
     } else if (status == 'rejected') {
-      bg = Colors.red.shade900.withOpacity(0.3);
-      fg = Colors.redAccent;
+      bg = Colors.red.withValues(alpha: 0.08);
+      fg = Colors.red.shade700;
       text = "Refusé";
     }
 
@@ -890,7 +912,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: fg.withOpacity(0.3)),
+        border: Border.all(color: fg.withValues(alpha: 0.3)),
       ),
       child: Text(
         text,

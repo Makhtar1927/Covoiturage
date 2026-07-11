@@ -19,7 +19,7 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
   final _startController = TextEditingController();
   final _endController = TextEditingController();
 
-  double _maxPrice = 10.0;
+  double _maxPrice = 1000.0;
   bool _filterByMyCircleOnly = true;
   String? _selectedTimeFilter; // 'today', 'tomorrow', 'all'
 
@@ -89,11 +89,20 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
     final allRides = ref.watch(rideListProvider);
     final filteredRides = _filterRides(allRides, user);
 
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textColor = cs.onSurface;
+    final subtitleColor = cs.onSurface.withValues(alpha: 0.6);
+    final cardBorder = cs.onSurface.withValues(alpha: 0.12);
+
     return Scaffold(
+      backgroundColor: cs.surface,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Recherche de Trajets",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
         ),
       ),
       body: Column(
@@ -109,16 +118,17 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                 // Glassmorphic Search Filters Card
                 GlassContainer(
                   opacity: 0.08,
-                  borderColor: Colors.deepPurpleAccent,
+                  borderColor: cs.primary,
+                  useWhiteBlend: !isDark,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
+                      Text(
                         "Filtres de recherche",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -126,10 +136,11 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                       TextFormField(
                         controller: _startController,
                         onChanged: (_) => setState(() {}),
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: textColor),
                         decoration: InputDecoration(
                           labelText: "Départ",
-                          prefixIcon: const Icon(Icons.circle_outlined, color: Colors.cyanAccent, size: 16),
+                          labelStyle: TextStyle(color: subtitleColor),
+                          prefixIcon: Icon(Icons.circle_outlined, color: cs.primary, size: 16),
                           suffixIcon: _startController.text.isNotEmpty
                               ? IconButton(
                                   icon: const Icon(Icons.clear, size: 16),
@@ -139,8 +150,6 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                                   },
                                 )
                               : null,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -148,9 +157,10 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                       TextFormField(
                         controller: _endController,
                         onChanged: (_) => setState(() {}),
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: textColor),
                         decoration: InputDecoration(
                           labelText: "Destination",
+                          labelStyle: TextStyle(color: subtitleColor),
                           prefixIcon: const Icon(Icons.location_on_rounded, color: Colors.redAccent, size: 16),
                           suffixIcon: _endController.text.isNotEmpty
                               ? IconButton(
@@ -161,26 +171,24 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                                   },
                                 )
                               : null,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
                       ),
                       const SizedBox(height: 16),
                       // Horizontal filter chips (Time)
                       Row(
                         children: [
-                          const Text("Date :", style: TextStyle(color: Colors.white70, fontSize: 13)),
+                          Text("Date :", style: TextStyle(color: subtitleColor, fontSize: 13)),
                           const SizedBox(width: 12),
                           Expanded(
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: [
-                                  _buildFilterChip('Tout', null),
+                                  _buildFilterChip('Tout', null, cs, isDark),
                                   const SizedBox(width: 8),
-                                  _buildFilterChip('Aujourd\'hui', 'today'),
+                                  _buildFilterChip('Aujourd\'hui', 'today', cs, isDark),
                                   const SizedBox(width: 8),
-                                  _buildFilterChip('Demain', 'tomorrow'),
+                                  _buildFilterChip('Demain', 'tomorrow', cs, isDark),
                                 ],
                               ),
                             ),
@@ -192,20 +200,20 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text("Prix max par place :", style: TextStyle(color: Colors.white70, fontSize: 13)),
+                          Text("Prix max par place :", style: TextStyle(color: subtitleColor, fontSize: 13)),
                           Text(
-                            "${_maxPrice.toStringAsFixed(2)} €",
-                            style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
+                            "${_maxPrice.toInt()} FCFA",
+                            style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Slider(
                         value: _maxPrice,
-                        min: 1.0,
-                        max: 20.0,
+                        min: 100.0,
+                        max: 2000.0,
                         divisions: 19,
-                        activeColor: Colors.cyanAccent,
-                        inactiveColor: Colors.white24,
+                        activeColor: cs.primary,
+                        inactiveColor: cs.onSurface.withValues(alpha: 0.15),
                         onChanged: (val) {
                           setState(() {
                             _maxPrice = val;
@@ -217,9 +225,9 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                         value: _filterByMyCircleOnly,
                         title: Text(
                           "Mon cercle uniquement (${user?.circle ?? 'Aucun'})",
-                          style: const TextStyle(color: Colors.white70, fontSize: 13),
+                          style: TextStyle(color: subtitleColor, fontSize: 13),
                         ),
-                        activeColor: Colors.cyanAccent,
+                        activeColor: cs.primary,
                         contentPadding: EdgeInsets.zero,
                         dense: true,
                         onChanged: (val) {
@@ -236,22 +244,22 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       "Trajets Disponibles",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
                     ),
                     Text(
                       "${filteredRides.length} résultat(s)",
-                      style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                      style: TextStyle(color: subtitleColor, fontSize: 12),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 // Results List
                 if (filteredRides.isEmpty)
-                  _buildNoResults()
+                  _buildNoResults(textColor, subtitleColor, isDark)
                 else
-                  ...filteredRides.map((ride) => _buildRideCard(context, ride)),
+                  ...filteredRides.map((ride) => _buildRideCard(context, ride, cs, textColor, subtitleColor, cardBorder, isDark)),
               ],
             ),
           ),
@@ -260,7 +268,7 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
     );
   }
 
-  Widget _buildFilterChip(String label, String? value) {
+  Widget _buildFilterChip(String label, String? value, ColorScheme cs, bool isDark) {
     final isSelected = _selectedTimeFilter == value;
     return ChoiceChip(
       label: Text(label),
@@ -270,49 +278,51 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
           _selectedTimeFilter = value;
         });
       },
-      selectedColor: Colors.cyanAccent.withOpacity(0.2),
-      backgroundColor: Colors.white.withOpacity(0.05),
+      selectedColor: cs.primary.withValues(alpha: 0.2),
+      backgroundColor: cs.onSurface.withValues(alpha: 0.05),
       labelStyle: TextStyle(
-        color: isSelected ? Colors.cyanAccent : Colors.white70,
+        color: isSelected ? cs.primary : cs.onSurface.withValues(alpha: 0.7),
         fontSize: 12,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
       side: BorderSide(
-        color: isSelected ? Colors.cyanAccent.withOpacity(0.5) : Colors.white12,
+        color: isSelected ? cs.primary.withValues(alpha: 0.5) : cs.onSurface.withValues(alpha: 0.1),
       ),
     );
   }
 
-  Widget _buildNoResults() {
+  Widget _buildNoResults(Color textColor, Color subtitleColor, bool isDark) {
     return GlassContainer(
       opacity: 0.05,
+      useWhiteBlend: !isDark,
       padding: const EdgeInsets.symmetric(vertical: 40.0),
       child: Column(
         children: [
-          const Icon(Icons.search_off_rounded, size: 64, color: Colors.white30),
+          Icon(Icons.search_off_rounded, size: 64, color: subtitleColor.withValues(alpha: 0.5)),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             "Aucun trajet trouvé",
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
           Text(
             "Essayez d'élargir vos critères de recherche.",
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+            style: TextStyle(color: subtitleColor, fontSize: 12),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRideCard(BuildContext context, Ride ride) {
+  Widget _buildRideCard(BuildContext context, Ride ride, ColorScheme cs, Color textColor, Color subtitleColor, Color cardBorder, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: GlassContainer(
         opacity: 0.07,
+        useWhiteBlend: !isDark,
         padding: const EdgeInsets.all(16),
-        borderColor: Colors.white10,
+        borderColor: cardBorder,
         child: InkWell(
           onTap: () {
             Navigator.push(
@@ -337,33 +347,33 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                       children: [
                         Row(
                           children: [
-                            Text(ride.driver.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                            Text(ride.driver.name, style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(width: 4),
-                            const Icon(Icons.verified, color: Colors.cyanAccent, size: 14),
+                            Icon(Icons.verified, color: cs.primary, size: 14),
                           ],
                         ),
                         Text(
                           "Cercle : ${ride.driver.circle} • ★ ${ride.driver.rating}",
-                          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11),
+                          style: TextStyle(color: subtitleColor, fontSize: 11),
                         ),
                       ],
                     ),
                   ),
                   Text(
-                    "${ride.price.toStringAsFixed(2)} €",
-                    style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.w900, fontSize: 18),
+                    "${ride.price.toInt()} FCFA",
+                    style: TextStyle(color: cs.primary, fontWeight: FontWeight.w900, fontSize: 18),
                   ),
                 ],
               ),
-              const Divider(color: Colors.white12, height: 24),
+              Divider(color: cs.onSurface.withValues(alpha: 0.1), height: 24),
               // Route
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
                     children: [
-                      const Icon(Icons.circle, color: Colors.cyanAccent, size: 10),
-                      Container(width: 2, height: 24, color: Colors.white24),
+                      Icon(Icons.circle, color: cs.primary, size: 10),
+                      Container(width: 2, height: 24, color: cs.onSurface.withValues(alpha: 0.15)),
                       const Icon(Icons.location_on, color: Colors.redAccent, size: 12),
                     ],
                   ),
@@ -374,14 +384,14 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                       children: [
                         Text(
                           ride.startPoint,
-                          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           ride.endPoint,
-                          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -394,34 +404,34 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                 const SizedBox(height: 8),
                 Text(
                   "Étape(s) : ${ride.intermediateStops.join(' ➔ ')}",
-                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, fontStyle: FontStyle.italic),
+                  style: TextStyle(color: subtitleColor.withValues(alpha: 0.7), fontSize: 11, fontStyle: FontStyle.italic),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
-              const Divider(color: Colors.white12, height: 20),
+              Divider(color: cs.onSurface.withValues(alpha: 0.1), height: 20),
               // Footer
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.calendar_month, color: Colors.white.withOpacity(0.6), size: 14),
+                      Icon(Icons.calendar_month, color: subtitleColor, size: 14),
                       const SizedBox(width: 6),
                       Text(
                         DateFormat('dd/MM/yyyy HH:mm').format(ride.dateTime),
-                        style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11),
+                        style: TextStyle(color: subtitleColor.withValues(alpha: 0.9), fontSize: 11),
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      Icon(Icons.airline_seat_recline_normal_rounded, color: Colors.white.withOpacity(0.6), size: 14),
+                      Icon(Icons.airline_seat_recline_normal_rounded, color: subtitleColor, size: 14),
                       const SizedBox(width: 4),
                       Text(
                         "${ride.availableSeats} place(s) restante(s)",
                         style: TextStyle(
-                          color: ride.availableSeats > 0 ? Colors.greenAccent : Colors.redAccent,
+                          color: ride.availableSeats > 0 ? Colors.green : Colors.red,
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                         ),

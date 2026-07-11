@@ -31,9 +31,21 @@ class RideDetailsScreen extends ConsumerWidget {
 
     final isBooked = userBooking.status != 'none';
 
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textColor = cs.onSurface;
+    final subtitleColor = cs.onSurface.withValues(alpha: 0.6);
+    final dividerColor = cs.onSurface.withValues(alpha: 0.12);
+
     return Scaffold(
+      backgroundColor: cs.surface,
       appBar: AppBar(
-        title: const Text("Détails du Trajet"),
+        title: Text(
+          "Détails du Trajet",
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -43,7 +55,8 @@ class RideDetailsScreen extends ConsumerWidget {
             // Route Header
             GlassContainer(
               opacity: 0.1,
-              borderColor: Colors.cyanAccent,
+              borderColor: cs.primary,
+              useWhiteBlend: !isDark,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -53,23 +66,23 @@ class RideDetailsScreen extends ConsumerWidget {
                       Text(
                         "COMMUNAUTAIRE",
                         style: TextStyle(
-                          color: Colors.cyanAccent.withOpacity(0.8),
+                          color: cs.primary,
                           fontWeight: FontWeight.bold,
                           fontSize: 12.0,
                           letterSpacing: 1.5,
                         ),
                       ),
                       Text(
-                        "${ride.price.toStringAsFixed(2)} €",
-                        style: const TextStyle(
-                          color: Colors.white,
+                        "${ride.price.toInt()} FCFA",
+                        style: TextStyle(
+                          color: textColor,
                           fontWeight: FontWeight.w900,
                           fontSize: 24.0,
                         ),
                       ),
                     ],
                   ),
-                  const Divider(color: Colors.white24, height: 20),
+                  Divider(color: dividerColor, height: 20),
                   const SizedBox(height: 8),
                   // Route endpoints
                   Row(
@@ -77,8 +90,8 @@ class RideDetailsScreen extends ConsumerWidget {
                     children: [
                       Column(
                         children: [
-                          const Icon(Icons.circle, color: Colors.cyanAccent, size: 12),
-                          Container(width: 2, height: 32, color: Colors.white24),
+                          Icon(Icons.circle, color: cs.primary, size: 12),
+                          Container(width: 2, height: 32, color: dividerColor),
                           const Icon(Icons.location_on, color: Colors.redAccent, size: 14),
                         ],
                       ),
@@ -89,12 +102,12 @@ class RideDetailsScreen extends ConsumerWidget {
                           children: [
                             Text(
                               ride.startPoint,
-                              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: textColor, fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 24),
                             Text(
                               ride.endPoint,
-                              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: textColor, fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -102,19 +115,22 @@ class RideDetailsScreen extends ConsumerWidget {
                     ],
                   ),
                   if (ride.intermediateStops.isNotEmpty) ...[
-                    const Divider(color: Colors.white12, height: 24),
-                    const Text("Étapes intermédiaires :", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Divider(color: dividerColor, height: 24),
+                    Text(
+                      "Étapes intermédiaires :",
+                      style: TextStyle(color: subtitleColor, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 6),
                     Wrap(
                       spacing: 8,
                       runSpacing: 4,
                       children: ride.intermediateStops.map((stop) {
                         return Chip(
-                          label: Text(stop, style: const TextStyle(fontSize: 11)),
-                          backgroundColor: Colors.white.withOpacity(0.05),
-                          labelStyle: const TextStyle(color: Colors.white70),
+                          label: Text(stop, style: TextStyle(fontSize: 11, color: textColor)),
+                          backgroundColor: cs.onSurface.withValues(alpha: 0.05),
                           padding: EdgeInsets.zero,
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          side: BorderSide(color: dividerColor),
                         );
                       }).toList(),
                     ),
@@ -127,6 +143,7 @@ class RideDetailsScreen extends ConsumerWidget {
             // Driver & Circle Card
             GlassContainer(
               opacity: 0.05,
+              useWhiteBlend: !isDark,
               child: Row(
                 children: [
                   CircleAvatar(
@@ -142,25 +159,28 @@ class RideDetailsScreen extends ConsumerWidget {
                           children: [
                             Text(
                               ride.driver.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
                             ),
                             const SizedBox(width: 4),
-                            const Icon(Icons.verified, color: Colors.cyanAccent, size: 18),
+                            Icon(Icons.verified, color: cs.primary, size: 18),
                           ],
                         ),
                         const SizedBox(height: 2),
                         Text(
                           "★ ${ride.driver.rating} • Conducteur vérifié",
-                          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12),
+                          style: TextStyle(color: subtitleColor, fontSize: 12),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.groups_rounded, size: 14, color: Colors.white.withOpacity(0.5)),
+                            Icon(Icons.groups_rounded, size: 14, color: subtitleColor.withValues(alpha: 0.8)),
                             const SizedBox(width: 4),
-                            Text(
-                              "Cercles autorisés : ${ride.allowedCircles.join(', ')}",
-                              style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11),
+                            Expanded(
+                              child: Text(
+                                "Cercles : ${ride.allowedCircles.join(', ')}",
+                                style: TextStyle(color: subtitleColor, fontSize: 11),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         )
@@ -178,17 +198,18 @@ class RideDetailsScreen extends ConsumerWidget {
                 Expanded(
                   child: GlassContainer(
                     opacity: 0.05,
+                    useWhiteBlend: !isDark,
                     padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.calendar_month, color: Colors.cyanAccent.withOpacity(0.8), size: 20),
+                        Icon(Icons.calendar_month, color: cs.primary, size: 20),
                         const SizedBox(height: 8),
-                        const Text("Date & Heure", style: TextStyle(color: Colors.white54, fontSize: 11)),
+                        Text("Date & Heure", style: TextStyle(color: subtitleColor, fontSize: 11)),
                         const SizedBox(height: 2),
                         Text(
                           DateFormat('dd/MM à HH:mm').format(ride.dateTime),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                       ],
                     ),
@@ -198,17 +219,18 @@ class RideDetailsScreen extends ConsumerWidget {
                 Expanded(
                   child: GlassContainer(
                     opacity: 0.05,
+                    useWhiteBlend: !isDark,
                     padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.airline_seat_recline_normal, color: Colors.cyanAccent.withOpacity(0.8), size: 20),
+                        Icon(Icons.airline_seat_recline_normal, color: cs.primary, size: 20),
                         const SizedBox(height: 8),
-                        const Text("Places disponibles", style: TextStyle(color: Colors.white54, fontSize: 11)),
+                        Text("Places libres", style: TextStyle(color: subtitleColor, fontSize: 11)),
                         const SizedBox(height: 2),
                         Text(
                           "${ride.availableSeats} / ${ride.totalSeats}",
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                       ],
                     ),
@@ -218,9 +240,9 @@ class RideDetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // MODULE 3: FEUILLE DE ROUTE (Only visible if booking is accepted/validated)
+            // MODULE 3: FEUILLE DE ROUTE (Only visible if booking is accepted)
             if (userBooking.status == 'accepted') ...[
-              _buildFeuilleDeRoute(context, userBooking),
+              _buildFeuilleDeRoute(context, userBooking, cs, textColor, subtitleColor, dividerColor, isDark),
               const SizedBox(height: 24),
             ],
 
@@ -229,33 +251,34 @@ class RideDetailsScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: cs.onSurface.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: dividerColor),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
                     "Vous êtes le conducteur de ce trajet",
-                    style: TextStyle(color: Colors.white70, fontStyle: FontStyle.italic),
+                    style: TextStyle(color: subtitleColor, fontStyle: FontStyle.italic),
                   ),
                 ),
               )
             else if (isBooked)
-              _buildBookingStatusArea(context, userBooking)
+              _buildBookingStatusArea(context, userBooking, cs)
             else if (ride.availableSeats <= 0)
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white10,
+                  backgroundColor: cs.onSurface.withValues(alpha: 0.1),
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 onPressed: null,
-                child: const Text("Trajet Complet", style: TextStyle(color: Colors.white30, fontSize: 16)),
+                child: Text("Trajet Complet", style: TextStyle(color: subtitleColor.withValues(alpha: 0.5), fontSize: 16)),
               )
             else
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyanAccent,
-                  foregroundColor: Colors.black87,
+                  backgroundColor: cs.primary,
+                  foregroundColor: cs.onPrimary,
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 5,
@@ -277,42 +300,43 @@ class RideDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFeuilleDeRoute(BuildContext context, Booking booking) {
+  Widget _buildFeuilleDeRoute(BuildContext context, Booking booking, ColorScheme cs, Color textColor, Color subtitleColor, Color dividerColor, bool isDark) {
     return GlassContainer(
       opacity: 0.08,
-      borderColor: Colors.tealAccent,
+      borderColor: Colors.teal,
+      useWhiteBlend: !isDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.description_rounded, color: Colors.tealAccent),
+              const Icon(Icons.description_rounded, color: Colors.teal),
               const SizedBox(width: 8),
               Text(
                 "Feuille de Route (Embarquée)",
-                style: TextStyle(color: Colors.tealAccent.shade100, fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(color: isDark ? Colors.tealAccent : Colors.teal.shade800, fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ],
           ),
-          const Divider(color: Colors.white24, height: 20),
+          Divider(color: dividerColor, height: 20),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             "Téléchargée localement pour accès en zone blanche.",
-            style: TextStyle(color: Colors.white54, fontSize: 11, fontStyle: FontStyle.italic),
+            style: TextStyle(color: subtitleColor, fontSize: 11, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 16),
           // Phone contact
           Row(
             children: [
-              const Icon(Icons.phone_rounded, color: Colors.white70, size: 18),
+              Icon(Icons.phone_rounded, color: subtitleColor, size: 18),
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Contact Conducteur", style: TextStyle(color: Colors.white54, fontSize: 10)),
+                  Text("Contact Conducteur", style: TextStyle(color: subtitleColor, fontSize: 10)),
                   Text(
-                    "+33 6 78 54 32 10",
-                    style: TextStyle(color: Colors.cyanAccent.shade100, fontSize: 13, fontWeight: FontWeight.bold),
+                    "+221 77 123 45 67",
+                    style: TextStyle(color: cs.primary, fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -323,16 +347,16 @@ class RideDetailsScreen extends ConsumerWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.meeting_room_rounded, color: Colors.white70, size: 18),
+              Icon(Icons.meeting_room_rounded, color: subtitleColor, size: 18),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Point de rendez-vous exact", style: TextStyle(color: Colors.white54, fontSize: 10)),
+                    Text("Point de rendez-vous exact", style: TextStyle(color: subtitleColor, fontSize: 10)),
                     Text(
                       booking.ride.startPoint,
-                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: textColor, fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -341,20 +365,20 @@ class RideDetailsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           // Route instructions
-          const Text(
+          Text(
             "Instructions d'itinéraire :",
-            style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 12),
           ),
           const SizedBox(height: 6),
-          _buildInstructionStep("1", "Rendez-vous à l'adresse de départ 5 minutes avant l'heure."),
-          _buildInstructionStep("2", "Le conducteur s'arrêtera sur la zone de dépose minute."),
-          _buildInstructionStep("3", "Trajet direct par la voie rapide vers ${booking.ride.endPoint}."),
+          _buildInstructionStep("1", "Rendez-vous à l'adresse de départ 5 minutes avant l'heure.", textColor, subtitleColor, dividerColor),
+          _buildInstructionStep("2", "Le conducteur s'arrêtera sur la zone de dépose minute.", textColor, subtitleColor, dividerColor),
+          _buildInstructionStep("3", "Trajet direct par la voie rapide vers ${booking.ride.endPoint}.", textColor, subtitleColor, dividerColor),
         ],
       ),
     );
   }
 
-  Widget _buildInstructionStep(String step, String text) {
+  Widget _buildInstructionStep(String step, String text, Color textColor, Color subtitleColor, Color dividerColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Row(
@@ -364,20 +388,20 @@ class RideDetailsScreen extends ConsumerWidget {
             width: 16,
             height: 16,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: Colors.white24,
+            decoration: BoxDecoration(
+              color: dividerColor,
               shape: BoxShape.circle,
             ),
             child: Text(
               step,
-              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              style: TextStyle(color: textColor, fontSize: 10, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(color: Colors.white70, fontSize: 11),
+              style: TextStyle(color: subtitleColor, fontSize: 11),
             ),
           ),
         ],
@@ -385,16 +409,16 @@ class RideDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBookingStatusArea(BuildContext context, Booking booking) {
-    Color color = Colors.white60;
+  Widget _buildBookingStatusArea(BuildContext context, Booking booking, ColorScheme cs) {
+    Color color = cs.onSurface.withValues(alpha: 0.6);
     String statusText = "";
     Widget? subWidget;
 
     if (booking.status == 'pending') {
-      color = Colors.amberAccent;
+      color = Colors.amber.shade700;
       statusText = "Demande en attente de validation";
     } else if (booking.status == 'accepted') {
-      color = Colors.greenAccent;
+      color = Colors.green.shade700;
       statusText = "Réservation acceptée !";
       subWidget = Padding(
         padding: const EdgeInsets.only(top: 14.0),
@@ -416,16 +440,16 @@ class RideDetailsScreen extends ConsumerWidget {
         ),
       );
     } else if (booking.status == 'rejected') {
-      color = Colors.redAccent;
+      color = Colors.red.shade700;
       statusText = "Réservation refusée par le conducteur";
     }
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

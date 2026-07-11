@@ -14,8 +14,8 @@ class NetworkBanner extends ConsumerWidget {
     return GlassContainer(
       borderRadius: 16.0,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      opacity: 0.1,
-      fillColor: isOnline ? Colors.teal : Colors.deepOrange,
+      opacity: 0.15,
+      fillColor: isOnline ? Colors.teal.shade800 : Colors.deepOrange.shade800,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -26,13 +26,13 @@ class NetworkBanner extends ConsumerWidget {
                 width: 10,
                 height: 10,
                 decoration: BoxDecoration(
-                  color: isOnline ? Colors.tealAccent : Colors.deepOrangeAccent,
+                  color: isOnline ? Colors.greenAccent : Colors.orangeAccent,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
                       color: isOnline 
-                          ? Colors.tealAccent.withOpacity(0.5) 
-                          : Colors.deepOrangeAccent.withOpacity(0.5),
+                          ? Colors.greenAccent.withValues(alpha: 0.5) 
+                          : Colors.orangeAccent.withValues(alpha: 0.5),
                       blurRadius: 6,
                       spreadRadius: 2,
                     ),
@@ -42,10 +42,10 @@ class NetworkBanner extends ConsumerWidget {
               const SizedBox(width: 10),
               Text(
                 isOnline ? "Réseau : En ligne" : "Réseau : Hors-ligne (Zone Blanche)",
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.95),
+                style: const TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.w600,
-                  fontSize: 13.0,
+                  fontSize: 12.0,
                 ),
               ),
             ],
@@ -56,7 +56,7 @@ class NetworkBanner extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -72,7 +72,7 @@ class NetworkBanner extends ConsumerWidget {
               ],
               TextButton.icon(
                 style: TextButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.12),
+                  backgroundColor: Colors.white.withValues(alpha: 0.12),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

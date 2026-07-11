@@ -42,9 +42,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textColor = cs.onSurface;
+    final subtitleColor = cs.onSurface.withValues(alpha: 0.6);
+    final inputBorderColor = cs.onSurface.withValues(alpha: 0.15);
 
     return Scaffold(
+      backgroundColor: cs.surface,
       body: Stack(
         children: [
           // Background blobs
@@ -55,7 +62,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               width: 300,
               height: 300,
               decoration: BoxDecoration(
-                color: Colors.deepPurple.shade900.withOpacity(0.5),
+                color: cs.primary.withValues(alpha: isDark ? 0.3 : 0.1),
                 shape: BoxShape.circle,
               ),
             ),
@@ -67,7 +74,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                color: Colors.cyan.shade900.withOpacity(0.4),
+                color: cs.secondary.withValues(alpha: isDark ? 0.25 : 0.08),
                 shape: BoxShape.circle,
               ),
             ),
@@ -88,33 +95,33 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         width: 90,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [Colors.deepPurpleAccent, Colors.cyanAccent],
+                          gradient: LinearGradient(
+                            colors: [cs.primary, cs.secondary],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.deepPurpleAccent.withOpacity(0.4),
+                              color: cs.primary.withValues(alpha: 0.3),
                               blurRadius: 15,
                               spreadRadius: 2,
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.directions_car_filled_rounded,
-                          color: Colors.black87,
+                          color: isDark ? Colors.black87 : Colors.white,
                           size: 48,
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       "CommuniRide",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.2,
-                        color: Colors.white,
+                        color: textColor,
                       ),
                     ),
 
@@ -124,24 +131,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.6),
+                        color: subtitleColor,
                       ),
                     ),
                     const SizedBox(height: 40),
                     // Glassmorphic Input Card
                     GlassContainer(
                       padding: const EdgeInsets.all(24.0),
+                      useWhiteBlend: !isDark,
                       child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Text(
+                            Text(
                               "Inscription / Connexion",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: textColor,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -149,29 +157,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               "Entrez votre adresse email @gmail.com pour rejoindre un cercle vérifié.",
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.white.withOpacity(0.6),
+                                color: subtitleColor,
                               ),
                             ),
                             const SizedBox(height: 24),
                             // Name Field
                             TextFormField(
                               controller: _nameController,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: textColor),
                               decoration: InputDecoration(
                                 labelText: "Nom complet",
-                                labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
-                                prefixIcon: const Icon(Icons.person_outline_rounded, color: Colors.white60),
+                                labelStyle: TextStyle(color: subtitleColor),
+                                prefixIcon: Icon(Icons.person_outline_rounded, color: subtitleColor),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                  borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                  borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: const BorderSide(color: Colors.cyanAccent),
+                                  borderSide: BorderSide(color: cs.primary),
                                 ),
                               ),
                               validator: (value) {
@@ -186,22 +194,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: textColor),
                               decoration: InputDecoration(
                                 labelText: "Adresse email",
-                                labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
-                                prefixIcon: const Icon(Icons.email_outlined, color: Colors.white60),
+                                labelStyle: TextStyle(color: subtitleColor),
+                                prefixIcon: Icon(Icons.email_outlined, color: subtitleColor),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                  borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                  borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: const BorderSide(color: Colors.cyanAccent),
+                                  borderSide: BorderSide(color: cs.primary),
                                 ),
                               ),
                               validator: (value) {
@@ -219,29 +227,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             // Circle selection
                             DropdownButtonFormField<String>(
                               value: _selectedCircle,
-                              dropdownColor: Colors.deepPurple.shade900,
-                              style: const TextStyle(color: Colors.white),
+                              dropdownColor: cs.surface,
+                              style: TextStyle(color: textColor),
                               decoration: InputDecoration(
                                 labelText: "Rejoindre un Cercle",
-                                labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
-                                prefixIcon: const Icon(Icons.group_work_outlined, color: Colors.white60),
+                                labelStyle: TextStyle(color: subtitleColor),
+                                prefixIcon: Icon(Icons.group_work_outlined, color: subtitleColor),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                  borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                  borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: const BorderSide(color: Colors.cyanAccent),
+                                  borderSide: BorderSide(color: cs.primary),
                                 ),
                               ),
                               items: _circles.map((String circle) {
                                 return DropdownMenuItem<String>(
                                   value: circle,
-                                  child: Text(circle),
+                                  child: Text(circle, style: TextStyle(color: textColor)),
                                 );
                               }).toList(),
                               onChanged: (value) {
@@ -256,20 +264,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             // Button
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.black87,
-                                backgroundColor: Colors.cyanAccent,
+                                foregroundColor: cs.onPrimary,
+                                backgroundColor: cs.primary,
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 elevation: 5,
-                                shadowColor: Colors.cyanAccent.withOpacity(0.3),
+                                shadowColor: cs.primary.withValues(alpha: 0.3),
                               ),
                               onPressed: _submit,
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "S'inscrire & Rejoindre",
                                     style: TextStyle(
                                       fontSize: 16,
@@ -277,8 +285,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                       letterSpacing: 0.5,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  Icon(Icons.arrow_forward_rounded, size: 20),
+                                  const SizedBox(width: 8),
+                                  Icon(Icons.arrow_forward_rounded, size: 20, color: cs.onPrimary),
                                 ],
                               ),
                             ),
