@@ -15,12 +15,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   
-  String _selectedCircle = 'Google Paris';
+  String _selectedCircle = 'UKAC Touba';
   final List<String> _circles = [
-    'Google Paris',
-    'Sorbonne Université',
-    'Station F',
-    'Université Paris-Saclay'
+    'UKAC Touba',
+    'Quartier Dianatou',
+    'Résidence Darou Khoudoss',
+    'Complexe Keur Nabi'
   ];
 
   @override

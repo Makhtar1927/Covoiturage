@@ -37,10 +37,10 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
   
   final List<String> _selectedCircles = [];
   final List<String> _availableCircles = [
-    'Google Paris',
-    'Sorbonne Université',
-    'Station F',
-    'Université Paris-Saclay'
+    'UKAC Touba',
+    'Quartier Dianatou',
+    'Résidence Darou Khoudoss',
+    'Complexe Keur Nabi'
   ];
 
   @override
