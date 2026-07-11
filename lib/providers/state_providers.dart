@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:uuid/uuid.dart';
@@ -12,7 +14,19 @@ const String kSyncQueueBoxName = 'sync_queue_box';
 
 // --- State Providers ---
 
-// Network status simulator (true = Online, false = Offline)
+// Theme mode toggle (default: light)
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+  return ThemeModeNotifier();
+});
+
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  ThemeModeNotifier() : super(ThemeMode.light);
+
+  void toggle() {
+    state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+  }
+}
+
 final networkStatusProvider = StateNotifierProvider<NetworkStatusNotifier, bool>((ref) {
   return NetworkStatusNotifier(ref);
 });

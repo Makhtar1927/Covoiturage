@@ -1,6 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+/// A glassmorphic container that adapts to both light and dark themes.
+/// - In dark mode: translucent white overlay (classic glass effect).
+/// - In light mode (useWhiteBlend=true): white fill with soft shadow for clarity.
 class GlassContainer extends StatelessWidget {
   final Widget child;
   final double blur;
@@ -10,6 +13,8 @@ class GlassContainer extends StatelessWidget {
   final EdgeInsetsGeometry margin;
   final Color? borderColor;
   final Color? fillColor;
+  /// When true, fills with white to stand out on light backgrounds.
+  final bool useWhiteBlend;
 
   const GlassContainer({
     super.key,
@@ -21,26 +26,39 @@ class GlassContainer extends StatelessWidget {
     this.margin = const EdgeInsets.all(0.0),
     this.borderColor,
     this.fillColor,
+    this.useWhiteBlend = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final base = fillColor ?? (useWhiteBlend ? Colors.white : Colors.white);
+    final effectiveOpacity = useWhiteBlend ? 0.95 : opacity;
+    final effectiveBorderColor = (borderColor ?? Colors.white).withValues(
+      alpha: useWhiteBlend ? 0.35 : 0.15,
+    );
+    final shadowColor = useWhiteBlend ? Colors.black : Colors.black;
+    final shadowOpacity = useWhiteBlend ? 0.07 : 0.14;
+
     return Container(
       margin: margin,
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20.0,
+            color: shadowColor.withValues(alpha: shadowOpacity),
+            blurRadius: useWhiteBlend ? 12 : 20.0,
             spreadRadius: -2,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          filter: ImageFilter.blur(
+            sigmaX: useWhiteBlend ? 4 : blur,
+            sigmaY: useWhiteBlend ? 4 : blur,
+          ),
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
@@ -48,13 +66,13 @@ class GlassContainer extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  (fillColor ?? Colors.white).withOpacity(opacity + 0.03),
-                  (fillColor ?? Colors.white).withOpacity(opacity - 0.02),
+                  base.withValues(alpha: effectiveOpacity + 0.03),
+                  base.withValues(alpha: effectiveOpacity - 0.02),
                 ],
               ),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                color: (borderColor ?? Colors.white).withOpacity(0.15),
+                color: effectiveBorderColor,
                 width: 1.5,
               ),
             ),
