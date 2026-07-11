@@ -227,6 +227,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             // Circle selection
                             DropdownButtonFormField<String>(
                               value: _selectedCircle,
+                              isExpanded: true,
                               dropdownColor: cs.surface,
                               style: TextStyle(color: textColor),
                               decoration: InputDecoration(
@@ -249,7 +250,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               items: _circles.map((String circle) {
                                 return DropdownMenuItem<String>(
                                   value: circle,
-                                  child: Text(circle, style: TextStyle(color: textColor)),
+                                  child: Text(
+                                    circle,
+                                    style: TextStyle(color: textColor),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 );
                               }).toList(),
                               onChanged: (value) {
