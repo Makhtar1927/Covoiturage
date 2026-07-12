@@ -5,6 +5,7 @@ import '../models/models.dart';
 import '../providers/state_providers.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/network_banner.dart';
+import '../widgets/user_avatar.dart';
 
 class DriverPortal extends ConsumerStatefulWidget {
   const DriverPortal({super.key});
@@ -970,8 +971,9 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                           shape: BoxShape.circle,
                           border: Border.all(color: cs.primary.withValues(alpha: 0.25), width: 1.5),
                         ),
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(passenger.avatar),
+                        child: UserAvatar(
+                          name: passenger.name,
+                          avatarUrl: passenger.avatar,
                           radius: 18,
                         ),
                       ),

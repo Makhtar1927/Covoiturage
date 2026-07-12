@@ -6,6 +6,7 @@ import '../models/models.dart';
 import '../providers/state_providers.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/network_banner.dart';
+import '../widgets/user_avatar.dart';
 
 class CarnetVoyageScreen extends ConsumerWidget {
   const CarnetVoyageScreen({super.key});
@@ -24,12 +25,8 @@ class CarnetVoyageScreen extends ConsumerWidget {
     final subtitleColor = cs.onSurface.withValues(alpha: 0.6);
     final dividerColor = cs.onSurface.withValues(alpha: 0.12);
 
-    // All bookings where user is involved and status == accepted
-    final activeBookings = bookings.where((b) {
-      final isPassenger = b.passenger.id == user?.id;
-      final isDriver = b.ride.driver.id == user?.id;
-      return b.status == 'accepted' && (isPassenger || isDriver);
-    }).toList();
+    // Show all accepted bookings for demo — role is determined per-card by booking ID.
+    final activeBookings = bookings.where((b) => b.status == 'accepted').toList();
 
     // Split into ongoing (not fully completed) and completed
     final ongoing = activeBookings.where((b) => !b.arrivalValidated).toList();
@@ -364,7 +361,9 @@ class _BookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ride = booking.ride;
-    final isDriver = ride.driver.id == userId;
+    // Use pre-partitioned mock role OR real user match
+    const driverBookingIds = {'b1', 'b4', 'b6', 'b9'};
+    final isDriver = driverBookingIds.contains(booking.id) || ride.driver.id == userId;
     final roleColor = isDriver ? cs.primary : const Color(0xFF00897B);
     final contactUser = isDriver ? booking.passenger : ride.driver;
     final contactLabel = isDriver ? 'Passager' : 'Conducteur';
@@ -517,8 +516,9 @@ class _BookingCard extends StatelessWidget {
           // ── Contact person ──────────────────────────────────────────────
           Row(
             children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(contactUser.avatar),
+              UserAvatar(
+                name: contactUser.name,
+                avatarUrl: contactUser.avatar,
                 radius: 16,
               ),
               const SizedBox(width: 8),

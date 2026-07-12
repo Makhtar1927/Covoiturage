@@ -10,6 +10,7 @@ import 'screens/passenger_search.dart';
 import 'screens/driver_portal.dart';
 import 'screens/carnet_voyage_screen.dart';
 import 'widgets/glass_container.dart';
+import 'widgets/user_avatar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -410,8 +411,9 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                                     shape: BoxShape.circle,
                                     color: Colors.white,
                                   ),
-                                  child: CircleAvatar(
-                                    backgroundImage: NetworkImage(user?.avatar ?? ''),
+                                  child: UserAvatar(
+                                    name: user?.name ?? '',
+                                    avatarUrl: user?.avatar ?? '',
                                     radius: 17,
                                   ),
                                 ),
@@ -567,8 +569,9 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(user?.avatar ?? ''),
+                UserAvatar(
+                  name: user?.name ?? '',
+                  avatarUrl: user?.avatar ?? '',
                   radius: 36,
                 ),
                 const SizedBox(height: 16),

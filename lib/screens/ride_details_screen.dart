@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/models.dart';
 import '../providers/state_providers.dart';
 import '../widgets/glass_container.dart';
+import '../widgets/user_avatar.dart';
 import 'carnet_voyage_screen.dart';
 
 class RideDetailsScreen extends ConsumerWidget {
@@ -146,8 +147,9 @@ class RideDetailsScreen extends ConsumerWidget {
               useWhiteBlend: !isDark,
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(ride.driver.avatar),
+                  UserAvatar(
+                    name: ride.driver.name,
+                    avatarUrl: ride.driver.avatar,
                     radius: 26,
                   ),
                   const SizedBox(width: 14),

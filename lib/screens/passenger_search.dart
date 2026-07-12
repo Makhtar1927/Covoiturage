@@ -5,6 +5,7 @@ import '../models/models.dart';
 import '../providers/state_providers.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/network_banner.dart';
+import '../widgets/user_avatar.dart';
 import 'ride_details_screen.dart';
 
 class PassengerSearch extends ConsumerStatefulWidget {
@@ -399,8 +400,9 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                         shape: BoxShape.circle,
                         border: Border.all(color: cs.primary.withValues(alpha: 0.3), width: 1.5),
                       ),
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(ride.driver.avatar),
+                      child: UserAvatar(
+                        name: ride.driver.name,
+                        avatarUrl: ride.driver.avatar,
                         radius: 20,
                       ),
                     ),

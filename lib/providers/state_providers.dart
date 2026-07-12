@@ -80,7 +80,7 @@ class CurrentUserNotifier extends StateNotifier<User?> {
       id: const Uuid().v4(),
       name: name,
       email: email,
-      avatar: 'https://api.dicebear.com/7.x/bottts/png?seed=${Uri.encodeComponent(name)}',
+      avatar: '', // → initials fallback via UserAvatar widget
       rating: 4.8,
       isVerified: true,
       circle: circle,
@@ -116,7 +116,7 @@ User _mkDriver1() => User(
       id: 'd1',
       name: 'Ibrahima Mbaye',
       email: 'ibrahima@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Ibrahima',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
       rating: 4.9,
       isVerified: true,
       circle: 'UKAC Touba',
@@ -126,7 +126,7 @@ User _mkDriver2() => User(
       id: 'd2',
       name: 'Mariama Sall',
       email: 'mariama@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Mariama',
+      avatar: '', // → initiales 'MS'
       rating: 4.7,
       isVerified: true,
       circle: 'Quartier Dianatou',
@@ -136,7 +136,7 @@ User _mkDriver3() => User(
       id: 'd3',
       name: 'Moustapha Diop',
       email: 'moustapha@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Moustapha',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
       rating: 4.5,
       isVerified: true,
       circle: 'Résidence Darou Khoudoss',
@@ -146,7 +146,7 @@ User _mkDriver4() => User(
       id: 'd4',
       name: 'Fatoumata Diallo',
       email: 'fatou@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Fatou',
+      avatar: '', // → initiales 'FD'
       rating: 4.8,
       isVerified: true,
       circle: 'Complexe Keur Nabi',
@@ -156,7 +156,7 @@ User _mkDriver5() => User(
       id: 'd5',
       name: 'Abdoulaye Thiam',
       email: 'abdoulaye@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Abdoulaye',
+      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
       rating: 4.6,
       isVerified: true,
       circle: 'UKAC Touba',
@@ -166,7 +166,7 @@ User _mkDriver6() => User(
       id: 'd6',
       name: 'Ndèye Fatou Cissé',
       email: 'ndeye.fatou@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Ndeye',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
       rating: 5.0,
       isVerified: true,
       circle: 'Quartier Dianatou',
@@ -178,7 +178,7 @@ User _mkPassenger1() => User(
       id: 'p1',
       name: 'Serigne Modou Ndiaye',
       email: 'smodou@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Serigne',
+      avatar: '', // → initiales 'SM'
       rating: 4.6,
       isVerified: true,
       circle: 'UKAC Touba',
@@ -188,7 +188,7 @@ User _mkPassenger2() => User(
       id: 'p2',
       name: 'Aminata Touré',
       email: 'aminata@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Aminata',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
       rating: 4.9,
       isVerified: true,
       circle: 'Quartier Dianatou',
@@ -198,7 +198,7 @@ User _mkPassenger3() => User(
       id: 'p3',
       name: 'Omar Sy Ba',
       email: 'omar.ba@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Omar',
+      avatar: '', // → initiales 'OS'
       rating: 4.4,
       isVerified: true,
       circle: 'Résidence Darou Khoudoss',
@@ -208,7 +208,7 @@ User _mkPassenger4() => User(
       id: 'p4',
       name: 'Rokhaya Diagne',
       email: 'rokhaya@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Rokhaya',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
       rating: 4.7,
       isVerified: false,
       circle: 'Complexe Keur Nabi',
@@ -218,7 +218,7 @@ User _mkPassenger5() => User(
       id: 'p5',
       name: 'Cheikh Tidiane Fall',
       email: 'ctfall@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Cheikh',
+      avatar: '', // → initiales 'CT'
       rating: 4.3,
       isVerified: true,
       circle: 'UKAC Touba',
@@ -228,7 +228,7 @@ User _mkPassenger6() => User(
       id: 'p6',
       name: 'Khadija Gueye',
       email: 'khadija@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Khadija',
+      avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&h=150&fit=crop&crop=face',
       rating: 5.0,
       isVerified: true,
       circle: 'Quartier Dianatou',
@@ -250,10 +250,10 @@ class RideListNotifier extends StateNotifier<List<Ride>> {
 
   Future<void> _initRides() async {
     _box = await Hive.openBox(kRidesBoxName);
-    final isMigrated = _box.get('mock_version_v2') == true;
+    final isMigrated = _box.get('mock_version_v3') == true;
     if (!isMigrated) {
       await _box.clear();
-      await _box.put('mock_version_v2', true);
+      await _box.put('mock_version_v3', true);
     }
     final ridesList = _box.values.whereType<String>().toList();
     if (ridesList.isEmpty) {
@@ -438,10 +438,10 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
 
   Future<void> _initBookings() async {
     _box = await Hive.openBox(kBookingsBoxName);
-    final isMigrated = _box.get('mock_version_v2') == true;
+    final isMigrated = _box.get('mock_version_v3') == true;
     if (!isMigrated) {
       await _box.clear();
-      await _box.put('mock_version_v2', true);
+      await _box.put('mock_version_v3', true);
     }
     final bookingsList = _box.values.whereType<String>().toList();
     if (bookingsList.isNotEmpty) {
