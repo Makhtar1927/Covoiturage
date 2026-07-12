@@ -57,7 +57,7 @@ class NetworkBanner extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(50),
                   ),
                   child: Text(
                     "${syncQueue.length} en attente",
@@ -75,7 +75,7 @@ class NetworkBanner extends ConsumerWidget {
                   backgroundColor: Colors.white.withValues(alpha: 0.12),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(50),
                   ),
                 ),
                 onPressed: () {

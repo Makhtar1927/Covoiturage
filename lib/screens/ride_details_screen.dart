@@ -252,7 +252,7 @@ class RideDetailsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: cs.onSurface.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: dividerColor),
                 ),
                 child: Center(
@@ -269,7 +269,7 @@ class RideDetailsScreen extends ConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: cs.onSurface.withValues(alpha: 0.1),
                   minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                 ),
                 onPressed: null,
                 child: Text("Trajet Complet", style: TextStyle(color: subtitleColor.withValues(alpha: 0.5), fontSize: 16)),
@@ -280,7 +280,7 @@ class RideDetailsScreen extends ConsumerWidget {
                   backgroundColor: cs.primary,
                   foregroundColor: cs.onPrimary,
                   minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                   elevation: 5,
                 ),
                 onPressed: () {
@@ -427,7 +427,7 @@ class RideDetailsScreen extends ConsumerWidget {
             backgroundColor: Colors.teal,
             foregroundColor: Colors.white,
             minimumSize: const Size.fromHeight(46),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           ),
           onPressed: () {
             Navigator.push(
@@ -448,7 +448,7 @@ class RideDetailsScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(

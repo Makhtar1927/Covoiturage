@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,22 +58,22 @@ final _lightTheme = ThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF1E7FBF),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.white,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(50),
       borderSide: const BorderSide(color: Color(0xFFDDE3EA)),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(50),
       borderSide: const BorderSide(color: Color(0xFFDDE3EA)),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(50),
       borderSide: const BorderSide(color: Color(0xFF1E7FBF), width: 1.5),
     ),
   ),
@@ -113,22 +114,22 @@ final _darkTheme = ThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF00D4FF),
       foregroundColor: const Color(0xFF0F0B1E),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: const Color(0xFF1E1A35),
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(50),
       borderSide: const BorderSide(color: Color(0xFF2E2855)),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(50),
       borderSide: const BorderSide(color: Color(0xFF2E2855)),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(50),
       borderSide: const BorderSide(color: Color(0xFF00D4FF), width: 1.5),
     ),
   ),
@@ -207,12 +208,8 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     // Adaptive colors
     final glowColor1 = isDark ? const Color(0xFF00D4FF) : const Color(0xFF1E7FBF);
     final glowColor2 = isDark ? const Color(0xFF7C5CBF) : const Color(0xFF00B4D8);
-    final navBarBg = isDark ? const Color(0xFF161129) : Colors.white;
     final selectedColor = cs.primary;
     final unselectedColor = isDark ? Colors.white38 : Colors.black38;
-    final navBorder = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.black.withValues(alpha: 0.06);
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -244,10 +241,10 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
             ),
           ),
 
-          // Screen content
+          // Screen content — padded below topbar and nav
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 80.0),
+              padding: const EdgeInsets.only(top: 72, bottom: 88),
               child: IndexedStack(
                 index: _currentIndex,
                 children: _screens,
@@ -255,95 +252,226 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
             ),
           ),
 
-          // Theme toggle button (top-left)
+          // ── Premium Top Bar ──────────────────────────────────────
           Positioned(
-            top: 14,
-            left: 16,
+            top: 0,
+            left: 0,
+            right: 0,
             child: SafeArea(
-              child: GestureDetector(
-                onTap: () => ref.read(themeModeProvider.notifier).toggle(),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  padding: const EdgeInsets.all(8),
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : Colors.white.withValues(alpha: 0.80),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.10)
+                              : Colors.white.withValues(alpha: 0.90),
+                          width: 1.2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: selectedColor.withValues(alpha: isDark ? 0.15 : 0.08),
+                            blurRadius: 24,
+                            offset: const Offset(0, 4),
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: isDark ? 0.30 : 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          // ── Logo + App Name ──
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [selectedColor, cs.secondary],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: selectedColor.withValues(alpha: 0.35),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.directions_car_filled_rounded,
+                              color: isDark ? Colors.black87 : Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          // ── Brand Name + Greeting ──
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'CommuniRide',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.4,
+                                    color: isDark ? Colors.white : const Color(0xFF1C1C2E),
+                                    height: 1.1,
+                                  ),
+                                ),
+                                if (user != null)
+                                  Text(
+                                    'Bonjour, ${user.name.split(' ').first} 👋',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.55)
+                                          : const Color(0xFF1C1C2E).withValues(alpha: 0.50),
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.2,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                              ],
+                            ),
+                          ),
+                          // ── Theme Toggle ──
+                          GestureDetector(
+                            onTap: () => ref.read(themeModeProvider.notifier).toggle(),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.08)
+                                    : selectedColor.withValues(alpha: 0.08),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: selectedColor.withValues(alpha: 0.20),
+                                  width: 1,
+                                ),
+                              ),
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: Icon(
+                                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                  key: ValueKey(isDark),
+                                  color: selectedColor,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          // ── Profile Avatar ──
+                          GestureDetector(
+                            onTap: () => _showProfileDialog(context, user, isDark, cs),
+                            child: Hero(
+                              tag: 'profile_avatar',
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      selectedColor,
+                                      cs.secondary,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: selectedColor.withValues(alpha: 0.35),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                  ),
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(user?.avatar ?? ''),
+                                    radius: 17,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Custom Navigation Bar — Premium Glass
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
                   decoration: BoxDecoration(
-                    color: navBarBg,
-                    shape: BoxShape.circle,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : Colors.white.withValues(alpha: 0.82),
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.10)
+                          : Colors.white.withValues(alpha: 0.9),
+                      width: 1.2,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: selectedColor.withValues(alpha: 0.18),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: selectedColor.withValues(alpha: isDark ? 0.18 : 0.10),
+                        blurRadius: 28,
+                        offset: const Offset(0, 8),
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.06),
+                        blurRadius: 14,
+                        offset: const Offset(0, 3),
                       ),
                     ],
-                    border: Border.all(color: navBorder),
                   ),
-                  child: Icon(
-                    isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                    color: selectedColor,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Profile avatar (top-right)
-          Positioned(
-            top: 14,
-            right: 16,
-            child: SafeArea(
-              child: GestureDetector(
-                onTap: () => _showProfileDialog(context, user, isDark, cs),
-                child: Hero(
-                  tag: 'profile_avatar',
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: selectedColor.withValues(alpha: 0.5), width: 1.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: selectedColor.withValues(alpha: 0.15),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(user?.avatar ?? ''),
-                      radius: 18,
-                    ),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildNavItem(0, Icons.search_rounded, "Rechercher", selectedColor, unselectedColor, isDark),
+                      _buildNavItem(1, Icons.directions_car_filled_rounded, "Conduire", selectedColor, unselectedColor, isDark),
+                      _buildNavItem(2, Icons.book_rounded, "Carnet", selectedColor, unselectedColor, isDark),
+                    ],
                   ),
                 ),
-              ),
-            ),
-          ),
-
-          // Custom Navigation Bar
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                color: navBarBg,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: navBorder),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(0, Icons.search_rounded, "Rechercher", selectedColor, unselectedColor),
-                  _buildNavItem(1, Icons.directions_car_filled_rounded, "Conducteur", selectedColor, unselectedColor),
-                  _buildNavItem(2, Icons.assignment_rounded, "Carnet", selectedColor, unselectedColor),
-                ],
               ),
             ),
           ),
@@ -352,30 +480,72 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label, Color selectedColor, Color unselectedColor) {
+  Widget _buildNavItem(int index, IconData icon, String label, Color selectedColor, Color unselectedColor, bool isDark) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
+        padding: isSelected
+            ? const EdgeInsets.symmetric(horizontal: 18, vertical: 10)
+            : const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? selectedColor.withValues(alpha: 0.12) : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [
+                    selectedColor.withValues(alpha: isDark ? 0.28 : 0.18),
+                    selectedColor.withValues(alpha: isDark ? 0.12 : 0.07),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          borderRadius: BorderRadius.circular(50),
+          border: isSelected
+              ? Border.all(color: selectedColor.withValues(alpha: 0.30), width: 1.2)
+              : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: selectedColor.withValues(alpha: 0.20),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
         ),
-        child: Column(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: isSelected ? selectedColor : unselectedColor, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
+            // Animated icon with subtle glow when selected
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                icon,
+                key: ValueKey('$index-$isSelected'),
                 color: isSelected ? selectedColor : unselectedColor,
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                size: isSelected ? 22 : 22,
               ),
+            ),
+            // Label slides in when selected
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              child: isSelected
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          color: selectedColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         ),
@@ -452,6 +622,10 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(44),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                  ),
                   onPressed: () => Navigator.pop(context),
                   child: const Text("Fermer"),
                 ),

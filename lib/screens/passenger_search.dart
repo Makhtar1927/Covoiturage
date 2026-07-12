@@ -115,69 +115,103 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
             child: ListView(
               padding: const EdgeInsets.all(16.0),
               children: [
-                // Glassmorphic Search Filters Card
                 GlassContainer(
                   opacity: 0.08,
-                  borderColor: cs.primary,
+                  borderColor: cs.primary.withValues(alpha: 0.4),
                   useWhiteBlend: !isDark,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        "Filtres de recherche",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
+                      Row(
+                        children: [
+                          Icon(Icons.tune_rounded, color: cs.primary, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Filtres de recherche",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      // Start search field
-                      TextFormField(
-                        controller: _startController,
-                        onChanged: (_) => setState(() {}),
-                        style: TextStyle(color: textColor),
-                        decoration: InputDecoration(
-                          labelText: "Départ",
-                          labelStyle: TextStyle(color: subtitleColor),
-                          prefixIcon: Icon(Icons.circle_outlined, color: cs.primary, size: 16),
-                          suffixIcon: _startController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear, size: 16),
-                                  onPressed: () {
-                                    _startController.clear();
-                                    setState(() {});
-                                  },
-                                )
-                              : null,
-                        ),
+                      const SizedBox(height: 20),
+                      // Connected Route search fields
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Journey line indicator on the left
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6.0, right: 6.0),
+                            child: Column(
+                              children: [
+                                Icon(Icons.radio_button_checked_rounded, color: cs.primary, size: 16),
+                                Container(
+                                  width: 2,
+                                  height: 38,
+                                  color: cs.onSurface.withValues(alpha: 0.15),
+                                ),
+                                const Icon(Icons.location_on_rounded, color: Colors.redAccent, size: 18),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Fields on the right
+                          Expanded(
+                            child: Column(
+                              children: [
+                                // Start search field
+                                TextFormField(
+                                  controller: _startController,
+                                  onChanged: (_) => setState(() {}),
+                                  style: TextStyle(color: textColor),
+                                  decoration: InputDecoration(
+                                    labelText: "Départ",
+                                    labelStyle: TextStyle(color: subtitleColor),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                    suffixIcon: _startController.text.isNotEmpty
+                                        ? IconButton(
+                                            icon: const Icon(Icons.clear, size: 16),
+                                            onPressed: () {
+                                              _startController.clear();
+                                              setState(() {});
+                                            },
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                // End search field
+                                TextFormField(
+                                  controller: _endController,
+                                  onChanged: (_) => setState(() {}),
+                                  style: TextStyle(color: textColor),
+                                  decoration: InputDecoration(
+                                    labelText: "Destination",
+                                    labelStyle: TextStyle(color: subtitleColor),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                    suffixIcon: _endController.text.isNotEmpty
+                                        ? IconButton(
+                                            icon: const Icon(Icons.clear, size: 16),
+                                            onPressed: () {
+                                              _endController.clear();
+                                              setState(() {});
+                                            },
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                      // End search field
-                      TextFormField(
-                        controller: _endController,
-                        onChanged: (_) => setState(() {}),
-                        style: TextStyle(color: textColor),
-                        decoration: InputDecoration(
-                          labelText: "Destination",
-                          labelStyle: TextStyle(color: subtitleColor),
-                          prefixIcon: const Icon(Icons.location_on_rounded, color: Colors.redAccent, size: 16),
-                          suffixIcon: _endController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear, size: 16),
-                                  onPressed: () {
-                                    _endController.clear();
-                                    setState(() {});
-                                  },
-                                )
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       // Horizontal filter chips (Time)
                       Row(
                         children: [
-                          Text("Date :", style: TextStyle(color: subtitleColor, fontSize: 13)),
+                          Text("Date :", style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w600)),
                           const SizedBox(width: 12),
                           Expanded(
                             child: SingleChildScrollView(
@@ -195,18 +229,26 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       // Max price slider
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Prix max par place :", style: TextStyle(color: subtitleColor, fontSize: 13)),
-                          Text(
-                            "${_maxPrice.toInt()} FCFA",
-                            style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold),
+                          Text("Prix max par place :", style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w600)),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: cs.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Text(
+                              "${_maxPrice.toInt()} FCFA",
+                              style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold, fontSize: 12),
+                            ),
                           ),
                         ],
                       ),
+                      const SizedBox(height: 4),
                       Slider(
                         value: _maxPrice,
                         min: 100.0,
@@ -225,7 +267,7 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                         value: _filterByMyCircleOnly,
                         title: Text(
                           "Mon cercle uniquement (${user?.circle ?? 'Aucun'})",
-                          style: TextStyle(color: subtitleColor, fontSize: 13),
+                          style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                         activeColor: cs.primary,
                         contentPadding: EdgeInsets.zero,
@@ -278,7 +320,8 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
           _selectedTimeFilter = value;
         });
       },
-      selectedColor: cs.primary.withValues(alpha: 0.2),
+      shape: const StadiumBorder(),
+      selectedColor: cs.primary.withValues(alpha: 0.18),
       backgroundColor: cs.onSurface.withValues(alpha: 0.05),
       labelStyle: TextStyle(
         color: isSelected ? cs.primary : cs.onSurface.withValues(alpha: 0.7),
@@ -286,7 +329,8 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
       side: BorderSide(
-        color: isSelected ? cs.primary.withValues(alpha: 0.5) : cs.onSurface.withValues(alpha: 0.1),
+        color: isSelected ? cs.primary.withValues(alpha: 0.6) : cs.onSurface.withValues(alpha: 0.1),
+        width: isSelected ? 1.5 : 1.0,
       ),
     );
   }
@@ -318,129 +362,262 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
   Widget _buildRideCard(BuildContext context, Ride ride, ColorScheme cs, Color textColor, Color subtitleColor, Color cardBorder, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: GlassContainer(
-        opacity: 0.07,
-        useWhiteBlend: !isDark,
-        padding: const EdgeInsets.all(16),
-        borderColor: cardBorder,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => RideDetailsScreen(ride: ride)),
-            );
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Driver header
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(ride.driver.avatar),
-                    radius: 18,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(ride.driver.name, style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14)),
-                            const SizedBox(width: 4),
-                            Icon(Icons.verified, color: cs.primary, size: 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: GlassContainer(
+          opacity: isDark ? 0.09 : 0.06,
+          useWhiteBlend: !isDark,
+          padding: const EdgeInsets.all(18),
+          borderColor: cardBorder,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RideDetailsScreen(ride: ride)),
+              );
+            },
+            borderRadius: BorderRadius.circular(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Driver header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(1.5),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: cs.primary.withValues(alpha: 0.3), width: 1.5),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(ride.driver.avatar),
+                        radius: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                ride.driver.name,
+                                style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(Icons.verified_rounded, color: cs.primary, size: 15),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Row(
+                            children: [
+                              // Community circle badge
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: cs.primary.withValues(alpha: 0.06),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text(
+                                  ride.driver.circle ?? "Sans cercle",
+                                  style: TextStyle(color: cs.primary, fontSize: 10, fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // Rating badge
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.star_rounded, color: Colors.amber, size: 12),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      ride.driver.rating.toString(),
+                                      style: const TextStyle(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Price pill badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            cs.primary.withValues(alpha: isDark ? 0.22 : 0.12),
+                            cs.primary.withValues(alpha: isDark ? 0.08 : 0.05),
                           ],
                         ),
-                        Text(
-                          "Cercle : ${ride.driver.circle} • ★ ${ride.driver.rating}",
-                          style: TextStyle(color: subtitleColor, fontSize: 11),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: cs.primary.withValues(alpha: 0.25), width: 1.2),
+                      ),
+                      child: Text(
+                        "${ride.price.toInt()} FCFA",
+                        style: TextStyle(
+                          color: cs.primary,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14,
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  Text(
-                    "${ride.price.toInt()} FCFA",
-                    style: TextStyle(color: cs.primary, fontWeight: FontWeight.w900, fontSize: 18),
-                  ),
-                ],
-              ),
-              Divider(color: cs.onSurface.withValues(alpha: 0.1), height: 24),
-              // Route
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
+                  ],
+                ),
+                Divider(color: cs.onSurface.withValues(alpha: 0.08), height: 28),
+                // Route visuals
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Column(
+                        children: [
+                          Icon(Icons.circle, color: cs.primary, size: 8),
+                          Container(
+                            width: 1.5,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [cs.primary, Colors.redAccent],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                            ),
+                          ),
+                          const Icon(Icons.location_on_rounded, color: Colors.redAccent, size: 12),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            ride.startPoint,
+                            style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            ride.endPoint,
+                            style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (ride.intermediateStops.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  // Intermediate stops styled as clean tag line
+                  Row(
                     children: [
-                      Icon(Icons.circle, color: cs.primary, size: 10),
-                      Container(width: 2, height: 24, color: cs.onSurface.withValues(alpha: 0.15)),
-                      const Icon(Icons.location_on, color: Colors.redAccent, size: 12),
+                      Icon(Icons.alt_route_rounded, color: subtitleColor.withValues(alpha: 0.5), size: 13),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: ride.intermediateStops.map((stop) {
+                              return Container(
+                                margin: const EdgeInsets.only(right: 6),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: cs.onSurface.withValues(alpha: 0.04),
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(color: cs.onSurface.withValues(alpha: 0.06)),
+                                ),
+                                child: Text(
+                                  stop,
+                                  style: TextStyle(color: subtitleColor, fontSize: 10, fontWeight: FontWeight.w500),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ride.startPoint,
-                          style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          ride.endPoint,
-                          style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
-              ),
-              if (ride.intermediateStops.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  "Étape(s) : ${ride.intermediateStops.join(' ➔ ')}",
-                  style: TextStyle(color: subtitleColor.withValues(alpha: 0.7), fontSize: 11, fontStyle: FontStyle.italic),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Divider(color: cs.onSurface.withValues(alpha: 0.08), height: 28),
+                // Footer details
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Date pill chip
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: cs.onSurface.withValues(alpha: 0.04),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_today_rounded, color: subtitleColor, size: 12),
+                          const SizedBox(width: 6),
+                          Text(
+                            DateFormat('dd/MM à HH:mm').format(ride.dateTime),
+                            style: TextStyle(color: subtitleColor, fontSize: 10, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Available seats pill chip
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: ride.availableSeats > 0 
+                            ? Colors.green.withValues(alpha: 0.12)
+                            : Colors.red.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.airline_seat_recline_normal_rounded, 
+                            color: ride.availableSeats > 0 ? Colors.green : Colors.red,
+                            size: 13,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${ride.availableSeats} place(s) libre(s)",
+                            style: TextStyle(
+                              color: ride.availableSeats > 0 ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
-              Divider(color: cs.onSurface.withValues(alpha: 0.1), height: 20),
-              // Footer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_month, color: subtitleColor, size: 14),
-                      const SizedBox(width: 6),
-                      Text(
-                        DateFormat('dd/MM/yyyy HH:mm').format(ride.dateTime),
-                        style: TextStyle(color: subtitleColor.withValues(alpha: 0.9), fontSize: 11),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.airline_seat_recline_normal_rounded, color: subtitleColor, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        "${ride.availableSeats} place(s) restante(s)",
-                        style: TextStyle(
-                          color: ride.availableSeats > 0 ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

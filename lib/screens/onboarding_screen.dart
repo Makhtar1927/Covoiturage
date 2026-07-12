@@ -170,15 +170,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 labelStyle: TextStyle(color: subtitleColor),
                                 prefixIcon: Icon(Icons.person_outline_rounded, color: subtitleColor),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: cs.primary),
                                 ),
                               ),
@@ -200,15 +200,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 labelStyle: TextStyle(color: subtitleColor),
                                 prefixIcon: Icon(Icons.email_outlined, color: subtitleColor),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: cs.primary),
                                 ),
                               ),
@@ -235,15 +235,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 labelStyle: TextStyle(color: subtitleColor),
                                 prefixIcon: Icon(Icons.group_work_outlined, color: subtitleColor),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: inputBorderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(50),
                                   borderSide: BorderSide(color: cs.primary),
                                 ),
                               ),
@@ -273,7 +273,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 backgroundColor: cs.primary,
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(50),
                                 ),
                                 elevation: 5,
                                 shadowColor: cs.primary.withValues(alpha: 0.3),

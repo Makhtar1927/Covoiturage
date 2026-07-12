@@ -74,7 +74,7 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                       color: isDriver 
                                           ? cs.primary.withValues(alpha: 0.12) 
                                           : Colors.teal.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(50),
                                       border: Border.all(
                                         color: isDriver 
                                             ? cs.primary.withValues(alpha: 0.3) 
@@ -186,7 +186,7 @@ class CarnetVoyageScreen extends ConsumerWidget {
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
                                     color: Colors.orange.withValues(alpha: 0.08),
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(12),
                                     border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
                                   ),
                                   child: Row(
@@ -272,7 +272,7 @@ class CarnetVoyageScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           ),
           onPressed: onValidate,
           child: const Text("Valider", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
@@ -285,7 +285,7 @@ class CarnetVoyageScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           ),
           onPressed: null,
           child: Text("Verrouillé", style: TextStyle(color: subtitleColor.withValues(alpha: 0.5), fontSize: 11)),
@@ -299,7 +299,7 @@ class CarnetVoyageScreen extends ConsumerWidget {
         color: isValidated 
             ? (isPending ? Colors.orange.withValues(alpha: 0.05) : Colors.teal.withValues(alpha: 0.05))
             : cs.onSurface.withValues(alpha: 0.02),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isValidated 
               ? (isPending ? Colors.orange.withValues(alpha: 0.2) : Colors.teal.withValues(alpha: 0.2))
