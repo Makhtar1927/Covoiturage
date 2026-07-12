@@ -91,9 +91,7 @@ class CurrentUserNotifier extends StateNotifier<User?> {
 
   Future<void> updateVehicle(Vehicle vehicle) async {
     if (state == null) return;
-    // We mock saving vehicle into the user's data or store it in another key
     await _box.put('driver_vehicle', vehicle.toJson());
-    // Trigger notification
     state = state!.copyWith(); // trigger notify
   }
 
@@ -112,7 +110,132 @@ class CurrentUserNotifier extends StateNotifier<User?> {
   }
 }
 
-// Rides State Provider (managing all rides)
+// ─── Shared mock drivers & passengers ───────────────────────────────────────
+
+User _mkDriver1() => User(
+      id: 'd1',
+      name: 'Ibrahima Mbaye',
+      email: 'ibrahima@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Ibrahima',
+      rating: 4.9,
+      isVerified: true,
+      circle: 'UKAC Touba',
+    );
+
+User _mkDriver2() => User(
+      id: 'd2',
+      name: 'Mariama Sall',
+      email: 'mariama@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Mariama',
+      rating: 4.7,
+      isVerified: true,
+      circle: 'Quartier Dianatou',
+    );
+
+User _mkDriver3() => User(
+      id: 'd3',
+      name: 'Moustapha Diop',
+      email: 'moustapha@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Moustapha',
+      rating: 4.5,
+      isVerified: true,
+      circle: 'Résidence Darou Khoudoss',
+    );
+
+User _mkDriver4() => User(
+      id: 'd4',
+      name: 'Fatoumata Diallo',
+      email: 'fatou@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Fatou',
+      rating: 4.8,
+      isVerified: true,
+      circle: 'Complexe Keur Nabi',
+    );
+
+User _mkDriver5() => User(
+      id: 'd5',
+      name: 'Abdoulaye Thiam',
+      email: 'abdoulaye@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Abdoulaye',
+      rating: 4.6,
+      isVerified: true,
+      circle: 'UKAC Touba',
+    );
+
+User _mkDriver6() => User(
+      id: 'd6',
+      name: 'Ndèye Fatou Cissé',
+      email: 'ndeye.fatou@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Ndeye',
+      rating: 5.0,
+      isVerified: true,
+      circle: 'Quartier Dianatou',
+    );
+
+// ─── Shared mock passengers ──────────────────────────────────────────────────
+
+User _mkPassenger1() => User(
+      id: 'p1',
+      name: 'Serigne Modou Ndiaye',
+      email: 'smodou@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Serigne',
+      rating: 4.6,
+      isVerified: true,
+      circle: 'UKAC Touba',
+    );
+
+User _mkPassenger2() => User(
+      id: 'p2',
+      name: 'Aminata Touré',
+      email: 'aminata@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Aminata',
+      rating: 4.9,
+      isVerified: true,
+      circle: 'Quartier Dianatou',
+    );
+
+User _mkPassenger3() => User(
+      id: 'p3',
+      name: 'Omar Sy Ba',
+      email: 'omar.ba@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Omar',
+      rating: 4.4,
+      isVerified: true,
+      circle: 'Résidence Darou Khoudoss',
+    );
+
+User _mkPassenger4() => User(
+      id: 'p4',
+      name: 'Rokhaya Diagne',
+      email: 'rokhaya@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Rokhaya',
+      rating: 4.7,
+      isVerified: false,
+      circle: 'Complexe Keur Nabi',
+    );
+
+User _mkPassenger5() => User(
+      id: 'p5',
+      name: 'Cheikh Tidiane Fall',
+      email: 'ctfall@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Cheikh',
+      rating: 4.3,
+      isVerified: true,
+      circle: 'UKAC Touba',
+    );
+
+User _mkPassenger6() => User(
+      id: 'p6',
+      name: 'Khadija Gueye',
+      email: 'khadija@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Khadija',
+      rating: 5.0,
+      isVerified: true,
+      circle: 'Quartier Dianatou',
+    );
+
+// ─── Rides State Provider ────────────────────────────────────────────────────
+
 final rideListProvider = StateNotifierProvider<RideListNotifier, List<Ride>>((ref) {
   return RideListNotifier(ref);
 });
@@ -127,105 +250,129 @@ class RideListNotifier extends StateNotifier<List<Ride>> {
 
   Future<void> _initRides() async {
     _box = await Hive.openBox(kRidesBoxName);
-    final ridesList = _box.values.toList();
+    final isMigrated = _box.get('mock_version_v2') == true;
+    if (!isMigrated) {
+      await _box.clear();
+      await _box.put('mock_version_v2', true);
+    }
+    final ridesList = _box.values.whereType<String>().toList();
     if (ridesList.isEmpty) {
       _loadDummyRides();
     } else {
-      state = ridesList.map((e) => Ride.fromJson(e as String)).toList();
+      state = ridesList.map((e) => Ride.fromJson(e)).toList();
     }
   }
 
   void _loadDummyRides() {
     final now = DateTime.now();
-    final driver1 = User(
-      id: 'd1',
-      name: 'Ibrahima Mbaye',
-      email: 'ibrahima@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Ibrahima',
-      rating: 4.9,
-      isVerified: true,
-      circle: 'UKAC Touba',
-    );
-    final driver2 = User(
-      id: 'd2',
-      name: 'Mariama Sall',
-      email: 'mariama@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Mariama',
-      rating: 4.7,
-      isVerified: true,
-      circle: 'Quartier Dianatou',
-    );
-    final driver3 = User(
-      id: 'd3',
-      name: 'Moustapha Diop',
-      email: 'moustapha@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Moustapha',
-      rating: 4.5,
-      isVerified: true,
-      circle: 'Résidence Darou Khoudoss',
-    );
-    final driver4 = User(
-      id: 'd4',
-      name: 'Fatoumata Diallo',
-      email: 'fatou@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Fatou',
-      rating: 4.8,
-      isVerified: true,
-      circle: 'Complexe Keur Nabi',
-    );
 
     final dummyRides = [
+      // ── Planned rides (available for search) ──────────────────────────────
       Ride(
         id: 'r1',
-        driver: driver1,
+        driver: _mkDriver1(),
         startPoint: 'Marché Ocass (Touba)',
         endPoint: 'UKAC - Campus Universitaire',
-        intermediateStops: ['Grande Mosquée de Touba'],
+        intermediateStops: ['Grande Mosquée de Touba', 'Pharmacie Centrale'],
         dateTime: now.add(const Duration(hours: 2)),
         price: 500,
-        availableSeats: 3,
+        availableSeats: 2,
         totalSeats: 4,
         allowedCircles: ['UKAC Touba'],
         status: 'planned',
       ),
       Ride(
         id: 'r2',
-        driver: driver2,
-        startPoint: 'Keur Nabi (Entrée)',
+        driver: _mkDriver2(),
+        startPoint: 'Keur Nabi (Entrée principale)',
         endPoint: 'Quartier Dianatou (Place Centrale)',
         intermediateStops: ['Baye Lamine', 'Darou Rahmane II'],
         dateTime: now.add(const Duration(hours: 4)),
         price: 300,
-        availableSeats: 2,
+        availableSeats: 1,
         totalSeats: 3,
         allowedCircles: ['Quartier Dianatou'],
         status: 'planned',
       ),
       Ride(
         id: 'r3',
-        driver: driver3,
+        driver: _mkDriver3(),
         startPoint: 'Gare Routière de Touba',
         endPoint: 'Résidence Darou Khoudoss',
-        intermediateStops: [],
+        intermediateStops: ['Boulangerie Al-Khaïr'],
         dateTime: now.add(const Duration(hours: 1)),
         price: 200,
-        availableSeats: 8,
+        availableSeats: 6,
         totalSeats: 12,
         allowedCircles: ['Résidence Darou Khoudoss', 'UKAC Touba'],
         status: 'planned',
       ),
       Ride(
         id: 'r4',
-        driver: driver4,
-        startPoint: 'Darou Mousty (Carréfour principal)',
+        driver: _mkDriver4(),
+        startPoint: 'Darou Mousty (Carrefour Principal)',
         endPoint: 'Complexe Keur Nabi (Bloc A)',
-        intermediateStops: ['Dianatou Mahwa'],
+        intermediateStops: ['Dianatou Mahwa', 'Marché Ndamatou'],
         dateTime: now.add(const Duration(hours: 3)),
         price: 150,
-        availableSeats: 28,
+        availableSeats: 22,
         totalSeats: 45,
         allowedCircles: ['Complexe Keur Nabi'],
         status: 'planned',
+      ),
+      Ride(
+        id: 'r8',
+        driver: _mkDriver2(),
+        startPoint: 'Complexe Keur Nabi',
+        endPoint: 'Université Cheikh Anta Diop (Antenne Touba)',
+        intermediateStops: ['Rond-Point Darou Marnane', 'École Technique'],
+        dateTime: now.add(const Duration(hours: 6)),
+        price: 350,
+        availableSeats: 3,
+        totalSeats: 5,
+        allowedCircles: ['Quartier Dianatou', 'Complexe Keur Nabi'],
+        status: 'planned',
+      ),
+      // ── Ongoing ride ──────────────────────────────────────────────────────
+      Ride(
+        id: 'r5',
+        driver: _mkDriver5(),
+        startPoint: 'UKAC - Bibliothèque Centrale',
+        endPoint: 'Gare Routière de Touba',
+        intermediateStops: ['Rond-Point Baye Lahat'],
+        dateTime: now.subtract(const Duration(hours: 1)),
+        price: 400,
+        availableSeats: 0,
+        totalSeats: 4,
+        allowedCircles: ['UKAC Touba', 'Quartier Dianatou'],
+        status: 'ongoing',
+      ),
+      // ── Completed rides ───────────────────────────────────────────────────
+      Ride(
+        id: 'r6',
+        driver: _mkDriver6(),
+        startPoint: 'Résidence Darou Khoudoss (Bloc C)',
+        endPoint: 'Hôpital Matlaboul Fawzeyni',
+        intermediateStops: ['Pharmacie El-Hadji Malick'],
+        dateTime: now.subtract(const Duration(hours: 3)),
+        price: 250,
+        availableSeats: 0,
+        totalSeats: 4,
+        allowedCircles: ['Quartier Dianatou', 'Résidence Darou Khoudoss'],
+        status: 'completed',
+      ),
+      Ride(
+        id: 'r7',
+        driver: _mkDriver1(),
+        startPoint: 'UKAC - Résidence Étudiante',
+        endPoint: 'Marché Ocass (Touba)',
+        intermediateStops: ['Grande Mosquée de Touba'],
+        dateTime: now.subtract(const Duration(days: 1, hours: 2)),
+        price: 500,
+        availableSeats: 0,
+        totalSeats: 3,
+        allowedCircles: ['UKAC Touba'],
+        status: 'completed',
       ),
     ];
 
@@ -275,7 +422,8 @@ class RideListNotifier extends StateNotifier<List<Ride>> {
   }
 }
 
-// Bookings State Provider (managing all bookings/reservations)
+// ─── Bookings State Provider ─────────────────────────────────────────────────
+
 final bookingProvider = StateNotifierProvider<BookingNotifier, List<Booking>>((ref) {
   return BookingNotifier(ref);
 });
@@ -290,42 +438,114 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
 
   Future<void> _initBookings() async {
     _box = await Hive.openBox(kBookingsBoxName);
-    final bookingsList = _box.values.toList();
+    final isMigrated = _box.get('mock_version_v2') == true;
+    if (!isMigrated) {
+      await _box.clear();
+      await _box.put('mock_version_v2', true);
+    }
+    final bookingsList = _box.values.whereType<String>().toList();
     if (bookingsList.isNotEmpty) {
-      state = bookingsList.map((e) => Booking.fromJson(e as String)).toList();
+      state = bookingsList.map((e) => Booking.fromJson(e)).toList();
     } else {
-      // Pre-load a dummy pending booking to show "Incoming Requests" to the driver
       _loadDummyBookings();
     }
   }
 
   void _loadDummyBookings() {
-    final passenger = User(
-
-      id: 'p1',
-      name: 'Serigne Modou Ndiaye',
-      email: 'smodou@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=Serigne',
-      rating: 4.6,
-      isVerified: true,
-      circle: 'UKAC Touba',
-    );
-
-    // Let's find r1 (driver1 = Alexandre) to request a booking from Lucas
     final rides = _ref.read(rideListProvider);
-    final r1 = rides.firstWhere((r) => r.id == 'r1', orElse: () => rides.first);
+    Ride rideById(String id) => rides.firstWhere((r) => r.id == id, orElse: () => rides.first);
 
-    final dummyBooking = Booking(
-      id: 'b1',
-      ride: r1,
-      passenger: passenger,
-      status: 'pending',
-      departureValidated: false,
-      arrivalValidated: false,
-    );
+    final now = DateTime.now();
 
-    _box.put(dummyBooking.id, dummyBooking.toJson());
-    state = [dummyBooking];
+    final dummyBookings = [
+      // ── Pending (conducteur voit les demandes entrantes) ──────────────────
+      Booking(
+        id: 'b1',
+        ride: rideById('r1'),
+        passenger: _mkPassenger1(),
+        status: 'pending',
+        departureValidated: false,
+        arrivalValidated: false,
+      ),
+      Booking(
+        id: 'b2',
+        ride: rideById('r2'),
+        passenger: _mkPassenger6(),
+        status: 'pending',
+        departureValidated: false,
+        arrivalValidated: false,
+      ),
+
+      // ── Accepted – départ non validé (Carnet: bouton "Valider Départ") ────
+      Booking(
+        id: 'b3',
+        ride: rideById('r3'),
+        passenger: _mkPassenger2(),
+        status: 'accepted',
+        departureValidated: false,
+        arrivalValidated: false,
+      ),
+      Booking(
+        id: 'b4',
+        ride: rideById('r4'),
+        passenger: _mkPassenger3(),
+        status: 'accepted',
+        departureValidated: false,
+        arrivalValidated: false,
+      ),
+
+      // ── Accepted – départ validé, arrivée non validée (trajet en cours) ──
+      Booking(
+        id: 'b5',
+        ride: rideById('r5'),
+        passenger: _mkPassenger4(),
+        status: 'accepted',
+        departureValidated: true,
+        arrivalValidated: false,
+      ),
+      Booking(
+        id: 'b6',
+        ride: rideById('r5'),
+        passenger: _mkPassenger5(),
+        status: 'accepted',
+        departureValidated: true,
+        arrivalValidated: false,
+      ),
+
+      // ── Accepted – validé hors-ligne (en attente de sync) ─────────────────
+      Booking(
+        id: 'b7',
+        ride: rideById('r8'),
+        passenger: _mkPassenger1(),
+        status: 'accepted',
+        departureValidated: true,
+        arrivalValidated: false,
+        offlineActionTimestamp: now.subtract(const Duration(minutes: 12)).toIso8601String(),
+      ),
+
+      // ── Fully completed (départ + arrivée validés) ────────────────────────
+      Booking(
+        id: 'b8',
+        ride: rideById('r6'),
+        passenger: _mkPassenger2(),
+        status: 'accepted',
+        departureValidated: true,
+        arrivalValidated: true,
+      ),
+      Booking(
+        id: 'b9',
+        ride: rideById('r7'),
+        passenger: _mkPassenger3(),
+        status: 'accepted',
+        departureValidated: true,
+        arrivalValidated: true,
+      ),
+    ];
+
+    for (var booking in dummyBookings) {
+      _box.put(booking.id, booking.toJson());
+    }
+    state = dummyBookings;
   }
 
   // Create booking reservation
@@ -337,7 +557,7 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
       id: const Uuid().v4(),
       ride: ride,
       passenger: passenger,
-      status: 'pending', // Pending validation by driver
+      status: 'pending',
       departureValidated: false,
       arrivalValidated: false,
     );
@@ -354,7 +574,7 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
           (() {
             final updated = b.copyWith(status: newStatus);
             _box.put(bookingId, updated.toJson());
-            
+
             // If accepted, update the ride's available seats
             if (newStatus == 'accepted') {
               final ride = b.ride;
@@ -385,11 +605,9 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
     final booking = state.firstWhere((b) => b.id == bookingId);
 
     if (isOnline) {
-      // Immediate server sync
       final updated = booking.copyWith(departureValidated: true);
       updateBookingLocally(updated);
     } else {
-      // Offline mode: mark departure validated and queue the sync action
       final updated = booking.copyWith(
         departureValidated: true,
         offlineActionTimestamp: DateTime.now().toIso8601String(),
@@ -412,7 +630,6 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
     final booking = state.firstWhere((b) => b.id == bookingId);
 
     if (isOnline) {
-      // Immediate server sync
       final updated = booking.copyWith(
         arrivalValidated: true,
         ride: booking.ride.copyWith(status: 'completed'),
@@ -420,7 +637,6 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
       updateBookingLocally(updated);
       _ref.read(rideListProvider.notifier).updateRide(updated.ride);
     } else {
-      // Offline mode: mark arrival validated and queue the sync action
       final updated = booking.copyWith(
         arrivalValidated: true,
         offlineActionTimestamp: DateTime.now().toIso8601String(),
@@ -438,7 +654,8 @@ class BookingNotifier extends StateNotifier<List<Booking>> {
   }
 }
 
-// Offline Synchronisation Queue State Provider
+// ─── Offline Synchronisation Queue State Provider ────────────────────────────
+
 final syncQueueProvider = StateNotifierProvider<SyncQueueNotifier, List<SyncAction>>((ref) {
   return SyncQueueNotifier(ref);
 });
@@ -478,17 +695,17 @@ class SyncQueueNotifier extends StateNotifier<List<SyncAction>> {
     for (var action in list) {
       try {
         final booking = _ref.read(bookingProvider).firstWhere((b) => b.id == action.bookingId);
-        
+
         if (action.actionType == 'VALIDATE_DEPARTURE') {
           final updated = booking.copyWith(
             departureValidated: true,
-            offlineActionTimestamp: null, // cleared
+            offlineActionTimestamp: null,
           );
           bookingsNotifier.updateBookingLocally(updated);
         } else if (action.actionType == 'VALIDATE_ARRIVAL') {
           final updated = booking.copyWith(
             arrivalValidated: true,
-            offlineActionTimestamp: null, // cleared
+            offlineActionTimestamp: null,
             ride: booking.ride.copyWith(status: 'completed'),
           );
           bookingsNotifier.updateBookingLocally(updated);
@@ -497,7 +714,7 @@ class SyncQueueNotifier extends StateNotifier<List<SyncAction>> {
       } catch (e) {
         // Handle case where booking might not exist
       }
-      
+
       await _box.delete(action.id);
     }
 
