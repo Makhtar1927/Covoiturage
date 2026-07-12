@@ -472,7 +472,7 @@ class RideDetailsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          if (subWidget != null) subWidget,
+          ?subWidget,
         ],
       ),
     );

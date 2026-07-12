@@ -226,7 +226,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             const SizedBox(height: 16),
                             // Circle selection
                             DropdownButtonFormField<String>(
-                              value: _selectedCircle,
+                              initialValue: _selectedCircle,
                               isExpanded: true,
                               dropdownColor: cs.surface,
                               style: TextStyle(color: textColor),
@@ -281,13 +281,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               onPressed: _submit,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
-                                    "S'inscrire & Rejoindre",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
+                                  Flexible(
+                                    child: Text(
+                                      "S'inscrire & Rejoindre",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   const SizedBox(width: 8),

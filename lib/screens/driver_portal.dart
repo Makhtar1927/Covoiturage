@@ -499,7 +499,7 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _selectedCategory,
+                  initialValue: _selectedCategory,
                   isExpanded: true,
                   dropdownColor: cs.surface,
                   style: TextStyle(color: textColor),

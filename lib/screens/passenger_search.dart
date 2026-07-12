@@ -269,7 +269,7 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                           "Mon cercle uniquement (${user?.circle ?? 'Aucun'})",
                           style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w500),
                         ),
-                        activeColor: cs.primary,
+                        activeThumbColor: cs.primary,
                         contentPadding: EdgeInsets.zero,
                         dense: true,
                         onChanged: (val) {
