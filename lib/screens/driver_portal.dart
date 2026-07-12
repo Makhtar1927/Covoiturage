@@ -249,13 +249,6 @@ class _DriverPortalState extends ConsumerState<DriverPortal> with SingleTickerPr
     final dividerColor = cs.onSurface.withValues(alpha: 0.12);
 
     return Scaffold(
-      backgroundColor: cs.surface,
-      appBar: AppBar(
-        title: Text(
-          "Espace Conducteur",
-          style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-        ),
-      ),
       body: Column(
         children: [
           // Floating Pill Tab Selector

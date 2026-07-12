@@ -1,41 +1,46 @@
-# CommuniRide - Plateforme de Covoiturage Communautaire
+# 🚗 CommuniRide - Plateforme de Covoiturage Communautaire
 
-CommuniRide est une application mobile de covoiturage communautaire développée avec **Flutter**. Elle met en relation les membres d'une même communauté (entreprises, universités, quartiers) pour partager des trajets planifiés. L'accent est mis sur la confiance grâce à la validation des profils et sur la robustesse du trajet via une feuille de route embarquée accessible hors-ligne.
+CommuniRide est une application mobile de covoiturage de confiance développée avec **Flutter & Riverpod**. Elle met en relation les membres d'une même communauté (entreprises, universités, quartiers) pour partager des trajets planifiés. L'accent est mis sur la sécurité via la validation des cercles d'appartenance et sur la robustesse avec un mode hors-ligne intelligent pour valider les étapes d'un trajet (départs et arrivées en zone blanche).
 
 ---
 
 ## 🚀 Fonctionnalités Principales
 
-### 🛡️ Module 1 : Profils Vérifiés & Cercles Communautaires
-* **Inscription & Vérification d'Email** : Validation stricte des adresses email (ex: `@gmail.com`) pour attribuer automatiquement des badges de confiance et joindre un cercle spécifique (ex: *Sorbonne Université*, *Google Paris*, *Station F*, *Université Paris-Saclay*).
-* **Gestion du Véhicule** : Les conducteurs déclarent leur véhicule en choisissant parmi 3 catégories : **Particulier** (1-4 places), **Mini-bus** (5-15 places), ou **Bus** (16-50 places). La capacité des trajets est bridée par la catégorie sélectionnée.
+### 🛡️ Module 1 : Cercles Communautaires & Profils Vérifiés
+* **Inscription & Validation** : Attribution automatique d'un cercle (ex: *UKAC Touba*, *Quartier Dianatou*, *Complexe Keur Nabi*) selon l'email ou les informations déclarées.
+* **Badges de Confiance** : Icône de validation pour les profils certifiés.
+* **Gestion de Véhicule** : Les conducteurs configurent leur véhicule par catégorie (Particulier, Mini-bus, Bus) avec adaptation dynamique du nombre maximum de places autorisées.
 
-### 🚗 Module 2 : Publication & Recherche de Trajets
-* **Conducteur** : Publication simplifiée avec arrêt de départ, arrivée, étapes intermédiaires, date et heure, prix unitaire et cercles autorisés.
-* **Passager** : Recherche multicritères avancée avec filtres dynamiques (prix max, horaires, et appartenance aux cercles). Réservation instantanée en attente de validation par le conducteur.
+### 🔍 Module 2 : Recherche & Réservation Premium
+* **Recherche par Filtres** : Recherche intelligente filtrant par point de départ, destination, prix maximal, date de trajet et appartenance au cercle communautaire.
+* **Cartes de Trajets Interactives** : Fiches détaillées avec étapes intermédiaires, horaires, prix et places disponibles.
+* **Demandes en attente** : Gestion des réservations entrantes côté conducteur dans l'espace dédié.
 
 ### 📡 Module 3 : Mode Hors-ligne & Carnet de Voyage
-* **Feuille de Route Embarquée** : Une fois la réservation acceptée, toutes les informations clés (contact du conducteur, adresses, instructions textuelles d'itinéraire) sont persistées localement dans la base de données.
-* **Validation Hors-ligne (Zone Blanche)** : Le passager et le conducteur peuvent confirmer le départ et l'arrivée même sans réseau. L'action est datée, mémorisée localement et mise en file d'attente.
-* **Synchronisation Automatique** : Dès que l'un des appareils capte à nouveau du réseau, les actions en attente sont synchronisées avec le serveur simulé.
+* **Feuille de Route Embarquée** : Accès local à toutes les informations de contact, trajet et itinéraire même en l'absence complète de réseau.
+* **Validation Résiliente (Zone Blanche)** : Déclaration du départ et de l'arrivée hors-ligne. Les actions sont mémorisées localement dans la file d'attente (Hive).
+* **Synchronisation en Arrière-plan** : Dès que l'application détecte le retour d'une connexion internet, elle synchronise les validations en arrière-plan sans interrompre l'expérience utilisateur.
 
 ---
 
 ## 🎨 Design & Esthétique Premium
 
-L'application a été construite selon les règles graphiques les plus modernes de Google (Material 3) :
-* **Glassmorphism (Effet Verre Dépoli)** : Des conteneurs translucides avec floutage d'arrière-plan (`BackdropFilter`) et bordures fines et lumineuses.
-* **Thème Sombre Fluorescent** : Palette de couleurs futuriste reposant sur un violet profond de fond (`0xFF0F0B1E`) combiné à des touches de cyan fluorescent (`Colors.cyanAccent`) et de violet électrique.
-* **Contours Arrondis & Animations** : Systématiquement appliqués sur toutes les cartes, champs de texte et boutons avec des arrondis prononcés (16.0 à 24.0 pixels).
+L'application a été repensée avec un design moderne Material 3 intégrant :
+* **Glow & Glassmorphism** : Cartes translucides floutées (`BackdropFilter`) avec de fins liserés et des ombres douces.
+* **Règle des Demi-Cercles Complets (StadiumBorder)** : Alignement strict de la charte graphique : tous les boutons, champs de saisie, chips de filtres et barres de navigation se terminent par des demi-cercles parfaits.
+* **Mélange d'Avatars Réels & Initiaux (`UserAvatar`)** :
+  * Affichage de photos de profils réelles et qualitatives pour les utilisateurs factices.
+  * Génération automatique d'un avatar à initiales avec un dégradé unique basé sur le code de hachage du nom pour les profils sans photo.
+* **Thème Sombre Fluorescent** : Palette moderne basée sur un bleu/violet profond (`#0F0B1E`), avec des accents cyan (`#00D4FF`) et violets pour une esthétique nocturne épurée.
 
 ---
 
-## 🛠️ Prérequis
+## 🛠️ Stack Technique
 
-Pour exécuter ce projet localement, assurez-vous d'avoir installé :
-* **Flutter SDK** (v3.12.x ou supérieur)
-* **Dart SDK** (v3.0.x ou supérieur)
-* Un émulateur Android/iOS ou un appareil physique connecté.
+* **Framework** : Flutter (M3)
+* **Gestion d'état** : Riverpod (StateNotifier)
+* **Stockage Local & Cache** : Hive & Hive Flutter (persistance locale hors-ligne pour les profils, trajets, réservations et file d'attente de synchronisation)
+* **Formatage & Dates** : Intl (support complet du français)
 
 ---
 
@@ -59,13 +64,13 @@ Pour exécuter ce projet localement, assurez-vous d'avoir installé :
 
 ---
 
-## 🧪 Simulation Réseau (Démonstration du Mode Hors-ligne)
+## 🧪 Simulation Réseau & Jeu de Test
 
-Un bandeau **"Réseau"** est présent en haut de chaque écran :
-1. **Étape 1** : Connectez-vous, configurez votre véhicule (conducteur) et publiez un trajet.
-2. **Étape 2** : Connectez un autre profil (ou utilisez les données de test préchargées) pour réserver un trajet.
-3. **Étape 3** : Côté conducteur, acceptez la demande de réservation dans l'onglet **"Demandes"**.
-4. **Étape 4** : Ouvrez les détails du trajet côté passager. La **Feuille de Route** s'affiche. Cliquez sur **"Ouvrir le Carnet de Voyage"**.
-5. **Étape 5** : Utilisez le bandeau supérieur pour passer en **"Hors-ligne"** (Simule une zone blanche).
-6. **Étape 6** : Cliquez sur **"Valider le Départ"**. Le statut passe en *"En attente de sync. ⏳"*.
-7. **Étape 7** : Repassez le réseau en **"En ligne"**. La synchronisation se déclenche automatiquement en arrière-plan et le statut passe au vert *"Validé ✓"*.
+L'application intègre un **Bandeau de Réseau interactif** en haut de chaque page pour basculer facilement entre les états **En ligne** et **Hors-ligne**.
+
+### Scénario de test recommandé :
+1. **Connexion & Accueil** : Connectez-vous lors de l'onboarding. Votre profil initialisé utilisera le système d'avatar personnalisé.
+2. **Consultation du Carnet de Voyage** : Ouvrez l'onglet "Carnet". Vous verrez les trajets simulés (prêts pour la démo). Certains sont indiqués comme terminés, d'autres sont actifs.
+3. **Simuler la zone blanche** : Appuyez sur le bandeau en haut pour passer en **"Hors-ligne"**.
+4. **Valider hors-ligne** : Cliquez sur **"Valider le Départ"** sur l'une des courses en cours. Le système mémorise l'action localement et affiche l'état transitoire orange *"Sync. ⏳"*.
+5. **Reconnexion** : Rétablissez la connexion en cliquant sur le bandeau pour repasser **"En ligne"**. La file d'attente se synchronise et l'état passe immédiatement au vert *"Validé ✓"*.

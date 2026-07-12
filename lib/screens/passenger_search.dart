@@ -99,13 +99,6 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
     final cardBorder = cs.onSurface.withValues(alpha: 0.12);
 
     return Scaffold(
-      backgroundColor: cs.surface,
-      appBar: AppBar(
-        title: Text(
-          "Recherche de Trajets",
-          style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-        ),
-      ),
       body: Column(
         children: [
           const Padding(
@@ -413,16 +406,23 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                         children: [
                           Row(
                             children: [
-                              Text(
-                                ride.driver.name,
-                                style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14),
+                              Flexible(
+                                child: Text(
+                                  ride.driver.name,
+                                  style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               const SizedBox(width: 4),
                               Icon(Icons.verified_rounded, color: cs.primary, size: 15),
                             ],
                           ),
-                          const SizedBox(height: 3),
-                          Row(
+                          const SizedBox(height: 5),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               // Community circle badge
                               Container(
@@ -434,9 +434,10 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                                 child: Text(
                                   ride.driver.circle ?? "Sans cercle",
                                   style: TextStyle(color: cs.primary, fontSize: 10, fontWeight: FontWeight.w600),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const SizedBox(width: 8),
                               // Rating badge
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -567,8 +568,11 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                 ],
                 Divider(color: cs.onSurface.withValues(alpha: 0.08), height: 28),
                 // Footer details
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     // Date pill chip
                     Container(
@@ -578,6 +582,7 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.calendar_today_rounded, color: subtitleColor, size: 12),
                           const SizedBox(width: 6),
@@ -598,6 +603,7 @@ class _PassengerSearchState extends ConsumerState<PassengerSearch> {
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.airline_seat_recline_normal_rounded, 

@@ -124,11 +124,6 @@ class CarnetVoyageScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              title: const Text(
-                'Carnet de Voyage',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              titlePadding: const EdgeInsets.fromLTRB(16, 0, 0, 12),
             ),
           ),
 
